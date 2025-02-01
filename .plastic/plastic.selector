@@ -1,0 +1,4 @@
+repository "case_galgame@canyizl@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
