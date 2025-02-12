@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 public class VNManager : MonoBehaviour
 {
-
+    public GameObject gamePanel;
+    public GameObject dialogueBox;
     public TextMeshProUGUI speakerName;
     public TextMeshProUGUI speakingContent;
     public TypewritterEffect typewritterEffect;
@@ -25,6 +26,12 @@ public class VNManager : MonoBehaviour
     public GameObject bottomButtons;
     public Button autoButton;
     public Button skipButton;
+    public Button saveButton;
+    public Button loadButton;
+    public Button historyButton;
+    public Button settingsButton;
+    public Button homeButton;
+    public Button closeButton;
 
     private string storyPath = Constants.STORY_PATH;
     private string defaultStoryFileName = Constants.DEFAULT_STORY_FILE_NAME;
@@ -38,18 +45,35 @@ public class VNManager : MonoBehaviour
     private int maxReachedLineIndex = 0;
     private Dictionary<string, int> globalMaxReachedLineIndices = new Dictionary<string, int>();
     // Start is called before the first frame update
+
+    public static VNManager Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
-        InitializeAndLoadStory(defaultStoryFileName);
         bottomButtonAddListener();
+        gamePanel.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (gamePanel.activeSelf && Input.GetMouseButtonDown(0))
         {
-            if (!IsHittingBottomButtons())
+            if (!dialogueBox.activeSelf)
+            {
+                OpenUI();
+            }
+            else if (!IsHittingBottomButtons())
             {
                 DisplayNextLine();
             }
@@ -60,6 +84,16 @@ public class VNManager : MonoBehaviour
     {
         autoButton.onClick.AddListener(OnAutoButtonClick);
         skipButton.onClick.AddListener(OnSkipButtonClick);
+        saveButton.onClick.AddListener(OnSaveButtonClick);
+        loadButton.onClick.AddListener(OnLoadButtonClick);
+
+        homeButton.onClick.AddListener(OnHomeButtoClick);
+        closeButton.onClick.AddListener(OnCloseButtoClick);
+    }
+
+    public void StartGame()
+    {
+        InitializeAndLoadStory(defaultStoryFileName);
     }
 
     void InitializeAndLoadStory(string fileName)
@@ -95,7 +129,15 @@ public class VNManager : MonoBehaviour
             maxReachedLineIndex = 0;
             globalMaxReachedLineIndices[currentStoryFileName] = maxReachedLineIndex;
         }
-    }    
+    }
+
+    bool IsHittingBottomButtons()
+    {
+        return RectTransformUtility.RectangleContainsScreenPoint(
+            bottomButtons.GetComponent<RectTransform>(),
+            Input.mousePosition,
+            null);
+    }
 
     void DisplayNextLine()
     {
@@ -276,14 +318,6 @@ public class VNManager : MonoBehaviour
         }
     }
 
-    bool IsHittingBottomButtons()
-    {
-        return RectTransformUtility.RectangleContainsScreenPoint(
-            bottomButtons.GetComponent<RectTransform>(),
-            Input.mousePosition,
-            null);
-    }
-
 
     void OnAutoButtonClick()
     {
@@ -306,6 +340,16 @@ public class VNManager : MonoBehaviour
             StopCoroutine(SkipToMaxReachedLine());
             EndSkip();
         }
+    }
+
+    void OnSaveButtonClick()
+    {
+        SaveLoadManager.Instance.ShowSaveLoadUI(true);
+    }
+
+    void OnLoadButtonClick()
+    {
+        SaveLoadManager.Instance.ShowSaveLoadUI(false);
     }
 
     bool CanSkip()
@@ -362,5 +406,26 @@ public class VNManager : MonoBehaviour
         }
     }
 
+    void OnHomeButtoClick()
+    {
+        gamePanel.SetActive(false);
+        MenuManager.Instance.menuPanel.SetActive(true);
+    }
 
+    void OnCloseButtoClick()
+    {
+        CloseUI();
+    }
+
+    void OpenUI()
+    {
+        dialogueBox.SetActive(true);
+        bottomButtons.SetActive(true);
+    }
+
+    void CloseUI()
+    {
+        dialogueBox.SetActive(false);
+        bottomButtons.SetActive(false);
+    }
 }
