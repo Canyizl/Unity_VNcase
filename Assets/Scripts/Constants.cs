@@ -49,4 +49,8 @@ public class Constants : MonoBehaviour
     public static string LOAD_GAME = "load_game";
     public static string EMPTY_SLOT = "empty_slot";
 
+    public static string CAMERA_NOT_FOUND = "Main camera not found!";
+    public static string SAVE_FILE_PATH = "saves";
+    public static string SAVE_FILE_EXTENSION = ".json";
+
 }

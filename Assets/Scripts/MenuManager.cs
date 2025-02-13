@@ -37,23 +37,33 @@ public class MenuManager : MonoBehaviour
     {
         startButton.onClick.AddListener(StartGame);
         continueButton.onClick.AddListener(ContinueGame);
+        loadButton.onClick.AddListener(LoadGame);
     }
 
     private void StartGame()
     {
         hasStarted = true;
         VNManager.Instance.StartGame();
-        menuPanel.SetActive(false);
-        VNManager.Instance.gamePanel.SetActive(true);
+        ShowGamePanel();
     }
 
     private void ContinueGame()
     {
         if (hasStarted)
         {
-            menuPanel.SetActive(false);
-            VNManager.Instance.gamePanel.SetActive(true);
+            ShowGamePanel();
         }
+    }
+
+    private void LoadGame()
+    {
+        VNManager.Instance.ShowLoadPanel(ShowGamePanel);
+    }
+
+    private void ShowGamePanel()
+    {
+        menuPanel.SetActive(false);
+        VNManager.Instance.gamePanel.SetActive(true);
     }
 
     // Update is called once per frame
