@@ -1,0 +1,1 @@
+This repo aims to develop a basic system framework for a Visual Novel Game, including UI design, text reading and typewriter effects, automatic playback and skipping, saving and loading and other functions.
