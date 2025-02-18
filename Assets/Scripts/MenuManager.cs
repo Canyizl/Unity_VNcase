@@ -38,6 +38,8 @@ public class MenuManager : MonoBehaviour
         startButton.onClick.AddListener(StartGame);
         continueButton.onClick.AddListener(ContinueGame);
         loadButton.onClick.AddListener(LoadGame);
+        settingsButton.onClick.AddListener(ShowSettingPanel);
+        quitButton.onClick.AddListener(QuitGame);
     }
 
     private void StartGame()
@@ -66,9 +68,13 @@ public class MenuManager : MonoBehaviour
         VNManager.Instance.gamePanel.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void ShowSettingPanel()
     {
-        
+        SettingManager.Instance.ShowSettingPanel();
+    }
+
+    private void QuitGame()
+    {
+        Application.Quit();
     }
 }

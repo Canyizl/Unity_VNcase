@@ -53,4 +53,6 @@ public class Constants : MonoBehaviour
     public static string SAVE_FILE_PATH = "saves";
     public static string SAVE_FILE_EXTENSION = ".json";
 
+    public static string X = "x";
+    public static int MAX_LENGTH = 50;
 }
