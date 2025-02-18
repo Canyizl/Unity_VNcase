@@ -58,6 +58,7 @@ public class VNManager : MonoBehaviour
     private int maxReachedLineIndex = 0;
     private Dictionary<string, int> globalMaxReachedLineIndices = new Dictionary<string, int>();
     private LinkedList<string> historyRecords = new LinkedList<string>();
+    public HashSet<string> unlockedBackgrounds = new HashSet<string>();
     public static VNManager Instance { get; private set; }
 
     #endregion
@@ -366,6 +367,10 @@ public class VNManager : MonoBehaviour
     {
         string imagePath = Constants.BACKGROUND_PATH + imageFileName;
         UpdateImage(imagePath, backgroundImage);
+        if (!unlockedBackgrounds.Contains(imageFileName))
+        {
+            unlockedBackgrounds.Add(imageFileName);
+        }
     }
 
     void UpdateCharacterImage(string action, string imageFileName, Image characterImage, string x)

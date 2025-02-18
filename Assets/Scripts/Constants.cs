@@ -11,7 +11,9 @@ public class Constants : MonoBehaviour
     public static string BACKGROUND_PATH = "image/background/";
     public static string BUTTON_PATH = "image/button/";
     public static string CHARACTER_PATH = "image/character/";
+    public static string THUMBNAIL_PATH = "image/thumbnail/";
     public static string IMAGE_LOAD_FALED = "Failed to load image: ";
+    public static string BIG_IMAGE_LOAD_FALED = "Failed to load image: ";
 
     public static float DEFAULT_TYPING_SPEED = 0.05f;
     public static float SKIP_MODE_TYPING_SPEED = 0.01f;
@@ -55,4 +57,11 @@ public class Constants : MonoBehaviour
 
     public static string X = "x";
     public static int MAX_LENGTH = 50;
+
+    public static int GALLERY_SLOTS_PER_PAGE = 9;
+    public static string GALLERY = "gallery";
+    public static string GALLERY_PLACEHOLDER = "gallery_placeholder";
+    public static readonly string[] ALL_BACKGROUNDS = { "1", "2", "3", "4", "c_青空", "c_青空2", "c_青空3", "c_月01", "c_月03", "c_月04", "c_月05" };
+    public static string UNLOCKED = "unlocked";
+
 }
