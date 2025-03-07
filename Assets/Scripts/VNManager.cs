@@ -141,7 +141,7 @@ public class VNManager : MonoBehaviour
         closeButton.onClick.AddListener(OnCloseButtoClick);
     }
 
-    public void StartGame()
+    public void StartGame(string defaultStoryFileName, int defaultStartLine)
     {
         InitializeAndLoadStory(defaultStoryFileName, defaultStartLine);
     }
@@ -265,8 +265,13 @@ public class VNManager : MonoBehaviour
     void DisplayThisLine()
     {
         var data = storyData[currentLine];
-        speakerName.text = data.speakerName;
-        currentSpeakingContent = data.speakingContent;
+
+        string playerName = PlayerData.Instance.playerName;
+        string speaker = data.speakerName.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string content = data.speakingContent.Replace(Constants.NAME_PLACEHOLDER, playerName);
+
+        speakerName.text = speaker;
+        currentSpeakingContent = content;
         typewritterEffect.StartTyping(currentSpeakingContent, currentTypingSpeed);
 
         RecordHistory(speakerName.text, currentSpeakingContent);
@@ -532,7 +537,8 @@ public class VNManager : MonoBehaviour
             savedLine = currentLine,
             savedSpeakingContent = currentSpeakingContent,
             savedScreenshotData = screenshotData,
-            savedHistoryRecords = historyRecords
+            savedHistoryRecords = historyRecords,
+            savedPlayerName = PlayerData.Instance.playerName
         };
         string savePath = Path.Combine(saveFolderPath, slotIndex + Constants.SAVE_FILE_EXTENSION);
         string json = JsonConvert.SerializeObject(saveData, Formatting.Indented);
@@ -546,6 +552,7 @@ public class VNManager : MonoBehaviour
         public string savedSpeakingContent;
         public byte[] savedScreenshotData;
         public LinkedList<string> savedHistoryRecords;
+        public string savedPlayerName;
     }
     #endregion
     #region Load
@@ -566,8 +573,12 @@ public class VNManager : MonoBehaviour
             isLoad = true;
             string json = File.ReadAllText(savePath);
             var saveData = JsonConvert.DeserializeObject<SaveData>(json);
+
             historyRecords = saveData.savedHistoryRecords;
             historyRecords.RemoveLast();
+
+            PlayerData.Instance.playerName = saveData.savedPlayerName;
+
             var lineNumber = saveData.savedLine - 1;
             InitializeAndLoadStory(saveData.savedStoryFileName, lineNumber);
         }

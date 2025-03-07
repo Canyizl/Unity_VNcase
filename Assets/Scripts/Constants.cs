@@ -64,4 +64,7 @@ public class Constants : MonoBehaviour
     public static readonly string[] ALL_BACKGROUNDS = { "1", "2", "3", "4", "c_青空", "c_青空2", "c_青空3", "c_月01", "c_月03", "c_月04", "c_月05" };
     public static string UNLOCKED = "unlocked";
 
+    public static string CONFIRM = "Confirm";
+    public static string PROMPT_TEXT = "Please Enter Your Name: ";
+    public static string NAME_PLACEHOLDER = "[Name]";
 }

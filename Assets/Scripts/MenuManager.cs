@@ -36,7 +36,8 @@ public class MenuManager : MonoBehaviour
 
     void menuButtonsAddListener()
     {
-        startButton.onClick.AddListener(StartGame);
+        //startButton.onClick.AddListener(StartGame);
+        startButton.onClick.AddListener(ShowInputPanel);
         continueButton.onClick.AddListener(ContinueGame);
         loadButton.onClick.AddListener(LoadGame);
         galleryButton.onClick.AddListener(ShowGalleryPanel);
@@ -44,11 +45,16 @@ public class MenuManager : MonoBehaviour
         quitButton.onClick.AddListener(QuitGame);
     }
 
-    private void StartGame()
+    public void StartGame()
     {
         hasStarted = true;
-        VNManager.Instance.StartGame();
+        VNManager.Instance.StartGame(Constants.DEFAULT_STORY_FILE_NAME, Constants.DEFAULT_START_LINE);
         ShowGamePanel();
+    }
+
+    private void ShowInputPanel()
+    {
+        InputManager.Instance.ShowInputPanel();
     }
 
     private void ContinueGame()
