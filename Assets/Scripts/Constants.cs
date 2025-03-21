@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class Constants : MonoBehaviour
 {
+    public static string VIDEO_PATH = "video";
+    public static string VIDEO_FILE_EXTENTION = ".mp4";
+    public static string MENU_SCENE = "MenuScene";
+
     public static string STORY_PATH = "story";
     public static string DEFAULT_STORY_FILE_NAME = "1";
     public static string EXCEL_FILE_EXTENSION = ".xlsx";

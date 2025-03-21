@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,8 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     public GameObject menuPanel;
+    public Image backgroundImage;
+
     public Button startButton;
     public Button continueButton;
     public Button loadButton;
@@ -40,6 +43,22 @@ public class MenuManager : MonoBehaviour
         menuButtonsAddListener();
         LocalizationManager.Instance.LoadLanguage(Constants.DEFAULT_LANGUAGE);
         UpdateLanguageButtonText();
+
+        string lastPlayedVideo = IntroManager.GetLastPlayedVideo();
+        if (!string.IsNullOrEmpty(lastPlayedVideo))
+        {
+            string videoFileName = Path.GetFileNameWithoutExtension(lastPlayedVideo);
+            string imagePath = Constants.BACKGROUND_PATH + videoFileName;
+            Sprite sprite = Resources.Load<Sprite>(imagePath);
+            if (sprite != null)
+            {
+                backgroundImage.sprite = sprite;
+            }
+            else
+            {
+                Debug.LogError(Constants.IMAGE_LOAD_FALED + imagePath);
+            }
+        }
     }
 
     void menuButtonsAddListener()
