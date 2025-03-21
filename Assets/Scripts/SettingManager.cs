@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,6 +46,9 @@ public class SettingManager : MonoBehaviour
 
     public void ShowSettingPanel()
     {
+        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CLOSE);
+        defaultButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.RESET);
+        UpdateToggleLabel(fullscreenToggle.isOn);
         settingPanel.SetActive(true);
     }
 
@@ -89,7 +93,7 @@ public class SettingManager : MonoBehaviour
 
     void UpdateToggleLabel(bool isFullscreen)
     {
-        toggleLabel.text = isFullscreen ? "Fullscreen" : "Windowed";
+        toggleLabel.text = isFullscreen ? LocalizationManager.Instance.GetLocalizedValue(Constants.FULLSCREEN): LocalizationManager.Instance.GetLocalizedValue(Constants.WINDOWED); ;
     }
 
     void SetResolution(int index)

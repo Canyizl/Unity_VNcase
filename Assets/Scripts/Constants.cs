@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Constants : MonoBehaviour
 {
-    public static string STORY_PATH = "Assets/Resources/story/";
+    public static string STORY_PATH = "story";
     public static string DEFAULT_STORY_FILE_NAME = "1";
     public static string EXCEL_FILE_EXTENSION = ".xlsx";
     public static int DEFAULT_START_LINE = 1;
@@ -67,4 +67,24 @@ public class Constants : MonoBehaviour
     public static string CONFIRM = "Confirm";
     public static string PROMPT_TEXT = "Please Enter Your Name: ";
     public static string NAME_PLACEHOLDER = "[Name]";
+
+    public static string DEFAULT_LANGUAGE = "zh";
+    public static string LANGUAGE_PATH = "languages";
+    public static string JSON_FILE_EXTENTION = ".json";
+    public static string LOCALIZATION_LOAD_FAILED = "Failed to load localization file.";
+    public static int DEFAULT_LANGUAGE_INDEX = 0;
+
+    public static string CHINESE = "中文";
+    public static string ENGLISH = "English";
+    public static string JAPANESE = "日本語";
+    public static string[] LANAGUAGES = { "zh" ,"en","ja"};
+
+    public static string PREV_PAGE = "previous_page";
+    public static string NEXT_PAGE = "next_page";
+    public static string BACK = "back";
+    public static string CLOSE = "close";
+
+    public static string FULLSCREEN = "fullscreen";
+    public static string WINDOWED = "windowed";
+    public static string RESET = "reset";
 }

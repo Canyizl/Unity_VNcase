@@ -11,7 +11,7 @@ public class HistoryManager : MonoBehaviour
     public GameObject historyScrollView;
     public Button closeButton;
 
-    private LinkedList<string> historyRecords;
+    private LinkedList<VNManager.historyData> historyRecords;
 
     public static HistoryManager Instance { get; private set; }
 
@@ -32,17 +32,33 @@ public class HistoryManager : MonoBehaviour
         closeButton.onClick.AddListener(CloseHistory);
     }
 
-    public void ShowHistory(LinkedList<string> records)
+    public void ShowHistory(LinkedList<VNManager.historyData> records)
     {
+        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = GetLocalized(Constants.CLOSE);
         foreach(Transform child in historyContent)
         {
             Destroy(child.gameObject);
         }
         historyRecords = records;
-        LinkedListNode<string> currentNode = historyRecords.Last;
+        LinkedListNode<VNManager.historyData> currentNode = historyRecords.Last;
         while(currentNode != null)
         {
-            AddHistoryItem(currentNode.Value);
+            var name = currentNode.Value.chineseName;
+            var content = currentNode.Value.chineseContent;
+            switch (MenuManager.Instance.currentLanguageIndex)
+            {
+                case 0:
+                    break;
+                case 1:
+                    name = currentNode.Value.englishName;
+                    content = currentNode.Value.englishContent;
+                    break;
+                case 2:
+                    name = currentNode.Value.japaneseName;
+                    content = currentNode.Value.japaneseContent;
+                    break;
+            }
+            AddHistoryItem(name + GetLocalized(Constants.COLON) + content);
             currentNode = currentNode.Previous;
         }
         historyContent.GetComponent<RectTransform>().localPosition = Vector3.zero;
@@ -60,5 +76,10 @@ public class HistoryManager : MonoBehaviour
         GameObject historyItem = Instantiate(historyItemPrefab, historyContent);
         historyItem.GetComponentInChildren<TextMeshProUGUI>().text = text;
         historyItem.transform.SetAsFirstSibling();
+    }
+
+    string GetLocalized(string key)
+    {
+        return LocalizationManager.Instance.GetLocalizedValue(key);
     }
 }

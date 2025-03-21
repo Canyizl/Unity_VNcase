@@ -55,6 +55,11 @@ public class GalleryManager : MonoBehaviour
 
     public void ShowGalleryPanel()
     {
+        panelTitle.text = LocalizationManager.Instance.GetLocalizedValue(Constants.GALLERY);
+        prevPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.PREV_PAGE);
+        nextPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.NEXT_PAGE);
+        backButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.BACK);
+
         UpdateUI();
         galleryPanel.SetActive(true);
     }

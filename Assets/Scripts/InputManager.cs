@@ -26,7 +26,6 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
-        confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = Constants.CONFIRM;
         confirmButton.onClick.AddListener(OnConfirm);
         inputPanel.SetActive(false);
 
@@ -51,7 +50,8 @@ public class InputManager : MonoBehaviour
 
     public void ShowInputPanel()
     {
-        promptText.text = Constants.PROMPT_TEXT;
+        confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CONFIRM);
+        promptText.text = LocalizationManager.Instance.GetLocalizedValue(Constants.PROMPT_TEXT);
         nameInputField.text = "";
         inputPanel.SetActive(true);
     }

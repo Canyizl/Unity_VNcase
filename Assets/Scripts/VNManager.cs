@@ -38,6 +38,16 @@ public class VNManager : MonoBehaviour
     public Button homeButton;
     public Button closeButton;
 
+    public class historyData
+    {
+        public string chineseName;
+        public string chineseContent;
+        public string englishName;
+        public string englishContent;
+        public string japaneseName;
+        public string japaneseContent;
+    }
+
     private string storyPath = Constants.STORY_PATH;
     private readonly string defaultStoryFileName = Constants.DEFAULT_STORY_FILE_NAME;
     private readonly int defaultStartLine = Constants.DEFAULT_START_LINE;
@@ -57,7 +67,7 @@ public class VNManager : MonoBehaviour
     private bool isLoad = false;
     private int maxReachedLineIndex = 0;
     private Dictionary<string, int> globalMaxReachedLineIndices = new Dictionary<string, int>();
-    private LinkedList<string> historyRecords = new LinkedList<string>();
+    private LinkedList<historyData> historyRecords;
     public HashSet<string> unlockedBackgrounds = new HashSet<string>();
     public static VNManager Instance { get; private set; }
 
@@ -171,13 +181,18 @@ public class VNManager : MonoBehaviour
         characterImage2.gameObject.SetActive(false);
 
         choicePanel.SetActive(false);
+        historyRecords = new LinkedList<historyData>();
     }
 
     void LoadStoryFromFile(string fileName)
     {
         currentStoryFileName = fileName;
-        var path = storyPath + currentStoryFileName + excelFileExtension;
-        storyData = ExcelReader.ReadExcel(path);
+        // var path = storyPath + currentStoryFileName + excelFileExtension;
+        var filePath = Path.Combine(Application.streamingAssetsPath,
+                        Constants.STORY_PATH,
+                        fileName + excelFileExtension
+            );
+        storyData = ExcelReader.ReadExcel(filePath);
         if (storyData == null || storyData.Count == 0)
         {
             Debug.LogError(Constants.NO_DATA_FOUND);
@@ -191,6 +206,17 @@ public class VNManager : MonoBehaviour
             maxReachedLineIndex = 0;
             globalMaxReachedLineIndices[currentStoryFileName] = maxReachedLineIndex;
         }
+    }
+
+    public void SetLanguage()
+    {
+        LoadStoryFromFile(currentStoryFileName);
+    }
+    public void ReloadStoryLine()
+    {
+        historyRecords.RemoveLast();
+        currentLine--;
+        DisplayNextLine();
     }
     #endregion
     #region Display
@@ -227,9 +253,19 @@ public class VNManager : MonoBehaviour
             DisplayThisLine();
         }
     }
-    void RecordHistory(string speaker, string content)
+    void RecordHistory(string chineseName, string chineseContent,
+        string englishName, string englishContent,
+        string japaneseName, string japaneseContent)
     {
-        string historyRecord = speaker + Constants.COLON + content;
+        var historyRecord = new historyData
+        {
+            chineseName = chineseName,
+            chineseContent = chineseContent,
+            englishName = englishName,
+            englishContent = englishContent,
+            japaneseName = japaneseName,
+            japaneseContent = japaneseContent
+        };
         if (historyRecords.Count >= Constants.MAX_LENGTH)
         {
             historyRecords.RemoveFirst();
@@ -265,16 +301,37 @@ public class VNManager : MonoBehaviour
     void DisplayThisLine()
     {
         var data = storyData[currentLine];
-
         string playerName = PlayerData.Instance.playerName;
+        /*
         string speaker = data.speakerName.Replace(Constants.NAME_PLACEHOLDER, playerName);
         string content = data.speakingContent.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        */
+        string chineseName = data.speakerName.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string chineseContent = data.speakingContent.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string englishName = data.speakerName.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string englishContent = data.speakingContent.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string japaneseName = data.speakerName.Replace(Constants.NAME_PLACEHOLDER, playerName);
+        string japaneseContent = data.speakingContent.Replace(Constants.NAME_PLACEHOLDER, playerName);
 
-        speakerName.text = speaker;
-        currentSpeakingContent = content;
+        switch (MenuManager.Instance.currentLanguageIndex)
+        {
+            case 0:
+                speakerName.text = chineseName;
+                currentSpeakingContent = chineseContent;
+                break;
+            case 1:
+                speakerName.text = englishName;
+                currentSpeakingContent = englishContent;
+                break;
+            case 2:
+                speakerName.text = japaneseName;
+                currentSpeakingContent = japaneseContent;
+                break;
+        }
+
         typewritterEffect.StartTyping(currentSpeakingContent, currentTypingSpeed);
 
-        RecordHistory(speakerName.text, currentSpeakingContent);
+        RecordHistory(chineseName, chineseContent, englishName, englishContent, japaneseName, japaneseContent);
 
         if (NotNullNorEmpty(data.avatarImageFileName))
         {
@@ -551,7 +608,7 @@ public class VNManager : MonoBehaviour
         public int savedLine;
         public string savedSpeakingContent;
         public byte[] savedScreenshotData;
-        public LinkedList<string> savedHistoryRecords;
+        public LinkedList<historyData> savedHistoryRecords;
         public string savedPlayerName;
     }
     #endregion

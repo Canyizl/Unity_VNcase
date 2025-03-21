@@ -25,6 +25,11 @@ public class ExcelReader: MonoBehaviour
         public string lastBackgroundMusic;
         public string lastcoordinateX1;
         public string lastcoordinateX2;
+        public string englishName;
+        public string englishContent;
+        public string japaneseName;
+        public string japaneseContent;
+
 
     }
     public static List<ExcelData> ReadExcel(string filePath)
@@ -56,7 +61,10 @@ public class ExcelReader: MonoBehaviour
                         data.lastBackgroundMusic = reader.IsDBNull(13) ? string.Empty : reader.GetValue(13)?.ToString();
                         data.lastcoordinateX1 = reader.IsDBNull(14) ? string.Empty : reader.GetValue(14)?.ToString();
                         data.lastcoordinateX2 = reader.IsDBNull(15) ? string.Empty : reader.GetValue(15)?.ToString();
-
+                        data.englishName = reader.IsDBNull(16)? string.Empty : reader.GetValue(16)?.ToString();
+                        data.englishContent = reader.IsDBNull(17)? string.Empty : reader.GetValue(17)?.ToString();
+                        data.japaneseName = reader.IsDBNull(18)? string.Empty : reader.GetValue(18)?.ToString();
+                        data.japaneseContent = reader.IsDBNull(19)? string.Empty : reader.GetValue(19)?.ToString();
 
                         excelData.Add(data);
                     }

@@ -49,17 +49,21 @@ public class SaveLoadManager : MonoBehaviour
     public void ShowSavePanel(System.Action<int> action)
     {
         isSave = true;
-        panelTitle.text = Constants.SAVE_GAME;
-        currentAction = action;
-        UpdateUI();
-        saveLoadPanel.SetActive(true);
+        ShowPanel(action);
     }
     public void ShowLoadPanel(System.Action<int> action, System.Action menuAction)
     {
         isSave = false;
-        panelTitle.text = Constants.LOAD_GAME;
+        ShowPanel(action);
+    }
+
+    private void ShowPanel(System.Action<int> action)
+    {
+        panelTitle.text = LocalizationManager.Instance.GetLocalizedValue(isSave ? Constants.SAVE_GAME : Constants.LOAD_GAME);
+        prevPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.PREV_PAGE);
+        nextPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.NEXT_PAGE);
+        backButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.BACK);
         currentAction = action;
-        this.menuAction = menuAction;
         UpdateUI();
         saveLoadPanel.SetActive(true);
     }
@@ -94,7 +98,7 @@ public class SaveLoadManager : MonoBehaviour
 
         var textCompents = button.GetComponentsInChildren<TextMeshProUGUI>();
         textCompents[0].text = null;
-        textCompents[1].text = (index + 1) + Constants.COLON + Constants.EMPTY_SLOT;
+        textCompents[1].text = (index + 1) + LocalizationManager.Instance.GetLocalizedValue(Constants.COLON) + LocalizationManager.Instance.GetLocalizedValue(Constants.EMPTY_SLOT);
         button.GetComponentInChildren<RawImage>().texture = null;
 
         button.onClick.RemoveAllListeners();
