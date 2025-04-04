@@ -469,7 +469,8 @@ public class VNManager : MonoBehaviour
     }
     bool CanSkip()
     {
-        return currentLine < maxReachedLineIndex;
+        return true;
+        //return currentLine < maxReachedLineIndex;
     }
     void StartSkip()
     {
@@ -487,6 +488,7 @@ public class VNManager : MonoBehaviour
     void CtrlSkip()
     {
         currentTypingSpeed = Constants.SKIP_MODE_TYPING_SPEED;
+        UpdateButtonImage(Constants.SKIP_ON, skipButton);
         StartCoroutine(SkipWhilePressingCtrl());
     }
     private IEnumerator SkipToMaxReachedLine()
@@ -511,6 +513,7 @@ public class VNManager : MonoBehaviour
             DisplayNextLine();
             yield return new WaitForSeconds(Constants.DEFAULT_SKIP_WAITTING_SECONDS);
         }
+        UpdateButtonImage(Constants.SKIP_OFF, skipButton);
     }
     #endregion
     #region Save

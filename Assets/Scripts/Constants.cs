@@ -28,7 +28,7 @@ public class Constants : MonoBehaviour
     public static string BIG_IMAGE_LOAD_FALED = "Failed to load image: ";
 
     public static float DEFAULT_TYPING_SPEED = 0.05f;
-    public static float SKIP_MODE_TYPING_SPEED = 0.01f;
+    public static float SKIP_MODE_TYPING_SPEED = 0.02f;
 
 
     public static string AUTO_ON = "autoplayon";
@@ -37,7 +37,7 @@ public class Constants : MonoBehaviour
 
     public static string SKIP_ON = "skipon";
     public static string SKIP_OFF = "skipoff";
-    public static float DEFAULT_SKIP_WAITTING_SECONDS = 0.02f;
+    public static float DEFAULT_SKIP_WAITTING_SECONDS = 0.08f;
 
     public static string VOCAL_PATH = "audio/vocal/";
     public static string MUSIC_PATH = "audio/music/";
