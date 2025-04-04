@@ -1,13 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
 {
-    public GameObject settingPanel;
     public Toggle fullscreenToggle;
     public Text toggleLabel;
     public TMP_Dropdown resolutionDropdown;
@@ -36,27 +37,21 @@ public class SettingManager : MonoBehaviour
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
 
+        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CLOSE);
+        defaultButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.RESET);
+        UpdateToggleLabel(fullscreenToggle.isOn);
+
         fullscreenToggle.onValueChanged.AddListener(SetDisplayMode);
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
         closeButton.onClick.AddListener(CloseSetting);
         defaultButton.onClick.AddListener(ResetSetting);
 
-        settingPanel.SetActive(false);
-    }
-
-    public void ShowSettingPanel()
-    {
-        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CLOSE);
-        defaultButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.RESET);
-        UpdateToggleLabel(fullscreenToggle.isOn);
-        settingPanel.SetActive(true);
     }
 
     void InitializeResolutions()
     {
         avaiableResolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
-
         var resolutionMap = new Dictionary<string, Resolution>();
         int currentResolutionIndex = 0;
 
@@ -79,7 +74,7 @@ public class SettingManager : MonoBehaviour
                     defaultResolution = res;
                 }
             }
-
+            
             resolutionDropdown.value = currentResolutionIndex;
             resolutionDropdown.RefreshShownValue();
         }
@@ -106,7 +101,12 @@ public class SettingManager : MonoBehaviour
 
     void CloseSetting()
     {
-        settingPanel.SetActive(false);
+        var sceneName = GameManager.Instance.currentScene;
+        if (sceneName == Constants.GAME_SCENE)
+        {
+            GameManager.Instance.historyRecords.RemoveLast();
+        }
+        SceneManager.LoadScene(sceneName);
     }
 
     void ResetSetting()

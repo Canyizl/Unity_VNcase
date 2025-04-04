@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
-    public GameObject inputPanel;
     public TextMeshProUGUI promptText;
     public TMP_InputField nameInputField;
     public Button confirmButton;
@@ -26,8 +27,10 @@ public class InputManager : MonoBehaviour
 
     void Start()
     {
+promptText.text = LocalizationManager.Instance.GetLocalizedValue(Constants.PROMPT_TEXT);
+        nameInputField.text = "";
+        confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CONFIRM);
         confirmButton.onClick.AddListener(OnConfirm);
-        inputPanel.SetActive(false);
 
     }
 
@@ -38,23 +41,12 @@ public class InputManager : MonoBehaviour
         {
             return;
         }
-        PlayerData.Instance.playerName = playerName;
-        inputPanel.SetActive(false);
-        MenuManager.Instance.StartGame();
+        GameManager.Instance.playerName = playerName;
+        SceneManager.LoadScene(Constants.GAME_SCENE);
     }
 
     bool IsInvalidName(string name)
     {
         return string.IsNullOrEmpty(name);
     }
-
-    public void ShowInputPanel()
-    {
-        confirmButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CONFIRM);
-        promptText.text = LocalizationManager.Instance.GetLocalizedValue(Constants.PROMPT_TEXT);
-        nameInputField.text = "";
-        inputPanel.SetActive(true);
-    }
-
-
 }

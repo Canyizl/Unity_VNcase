@@ -4,7 +4,15 @@ public class Constants : MonoBehaviour
 {
     public static string VIDEO_PATH = "video";
     public static string VIDEO_FILE_EXTENTION = ".mp4";
+
     public static string MENU_SCENE = "MenuScene";
+    public static string GALLERY_SCENE = "GalleryScene";
+    public static string SETTING_SCENE = "SettingScene";
+    public static string SAVE_LOAD_SCENE = "SaveLoadScene";
+    public static string GAME_SCENE = "GameScene";
+    public static string INPUT_SCENE = "InputScene";
+    public static string HISTORY_SCENE = "HistoryScene";
+
 
     public static string STORY_PATH = "story";
     public static string DEFAULT_STORY_FILE_NAME = "1";
@@ -77,11 +85,7 @@ public class Constants : MonoBehaviour
     public static string JSON_FILE_EXTENTION = ".json";
     public static string LOCALIZATION_LOAD_FAILED = "Failed to load localization file.";
     public static int DEFAULT_LANGUAGE_INDEX = 0;
-
-    public static string CHINESE = "中文";
-    public static string ENGLISH = "English";
-    public static string JAPANESE = "日本語";
-    public static string[] LANAGUAGES = { "zh" ,"en","ja"};
+    public static string[] LANGUAGES = { "zh" ,"en","ja"};
 
     public static string PREV_PAGE = "previous_page";
     public static string NEXT_PAGE = "next_page";

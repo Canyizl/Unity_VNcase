@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GalleryManager : MonoBehaviour
 {
-    public GameObject galleryPanel;
     public TextMeshProUGUI panelTitle;
     public Button[] galleryButtons;
     public Button prevPageButton;
@@ -35,11 +35,15 @@ public class GalleryManager : MonoBehaviour
 
     void Start()
     {
+        panelTitle.text = LocalizationManager.Instance.GetLocalizedValue(Constants.GALLERY);
+        prevPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.PREV_PAGE);
+        nextPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.NEXT_PAGE);
+        backButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.BACK);
+
+
         prevPageButton.onClick.AddListener(PrevPage);
         nextPageButton.onClick.AddListener(NextPage);
         backButton.onClick.AddListener(GoBack);
-        galleryPanel.SetActive(false);
-        panelTitle.text = Constants.GALLERY;
 
         bigImagePanel.SetActive(false);
         Button bigImageButton = bigImagePanel.GetComponent<Button>();
@@ -47,21 +51,6 @@ public class GalleryManager : MonoBehaviour
         {
             bigImageButton.onClick.AddListener(HideBigImage);
         }
-        else
-        {
-            Debug.LogWarning("BigImagePanelÉÏµÄButtonÄØ£¿");
-        }
-    }
-
-    public void ShowGalleryPanel()
-    {
-        panelTitle.text = LocalizationManager.Instance.GetLocalizedValue(Constants.GALLERY);
-        prevPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.PREV_PAGE);
-        nextPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.NEXT_PAGE);
-        backButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.BACK);
-
-        UpdateUI();
-        galleryPanel.SetActive(true);
     }
 
     private void UpdateUI()
@@ -84,7 +73,7 @@ public class GalleryManager : MonoBehaviour
     {
         button.gameObject.SetActive(true);
         string bgName = Constants.ALL_BACKGROUNDS[index];
-        bool isUnlocked = VNManager.Instance.unlockedBackgrounds.Contains(bgName);
+        bool isUnlocked = GameManager.Instance.unlockedBackgrounds.Contains(bgName);
 
         string imagePath = Constants.THUMBNAIL_PATH + (isUnlocked ? bgName : Constants.GALLERY_PLACEHOLDER);
         Sprite sprite = Resources.Load<Sprite>(imagePath);
@@ -103,7 +92,7 @@ public class GalleryManager : MonoBehaviour
     private void OnButtonClick(Button button, int index)
     {
         string bgName = Constants.ALL_BACKGROUNDS[index];
-        bool isUnlocked = VNManager.Instance.unlockedBackgrounds.Contains(bgName);
+        bool isUnlocked = GameManager.Instance.unlockedBackgrounds.Contains(bgName);
 
         if (!isUnlocked)
         {
@@ -148,6 +137,6 @@ public class GalleryManager : MonoBehaviour
 
     private void GoBack()
     {
-        galleryPanel.SetActive(false);
+        SceneManager.LoadScene(Constants.MENU_SCENE);
     }
 }

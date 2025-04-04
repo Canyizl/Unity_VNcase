@@ -3,6 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
+public static class LM
+{
+    public static string GetSpeakerName(ExcelReader.ExcelData data)
+    {
+        string currentSpeakerName = string.Empty;
+        switch (GameManager.Instance.currentLanguageIndex)
+        {
+            case 0:
+                currentSpeakerName = ReplaceName(data.speakerName);
+                break;
+            case 1:
+                currentSpeakerName = ReplaceName(data.englishName);
+                break;
+            case 2:
+                currentSpeakerName = ReplaceName(data.japaneseName);
+                break;
+        }
+        return currentSpeakerName;
+    }
+
+    public static string GetSpeakingContent(ExcelReader.ExcelData data)
+    {
+        string currentSpeakingContent = string.Empty;
+        switch (GameManager.Instance.currentLanguageIndex)
+        {
+            case 0:
+                currentSpeakingContent = ReplaceName(data.speakingContent);
+                break;
+            case 1:
+                currentSpeakingContent = ReplaceName(data.englishContent);
+                break;
+            case 2:
+                currentSpeakingContent = ReplaceName(data.japaneseContent);
+                break;
+        }
+        return currentSpeakingContent;
+    }
+
+    public static string ReplaceName(string content)
+    {
+        return content.Replace(Constants.NAME_PLACEHOLDER, GameManager.Instance.playerName);
+    }
+}
+
 public class LocalizationManager : MonoBehaviour
 {
     public Dictionary<string, string> localizedText;
@@ -17,6 +61,7 @@ public class LocalizationManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {

@@ -548,6 +548,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 1587009696}
+  OnVideoSkipped:
+    m_PersistentCalls:
+      m_Calls: []
+  isPlaying: 0
 --- !u!4 &1688758612
 Transform:
   m_ObjectHideFlags: 0
@@ -770,8 +774,8 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1367451690}
-  - {fileID: 1587009697}
   - {fileID: 1673299974}
+  - {fileID: 1587009697}
   - {fileID: 1688758612}
   - {fileID: 1806029531}
   - {fileID: 1859188267}

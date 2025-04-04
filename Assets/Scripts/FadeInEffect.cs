@@ -6,9 +6,29 @@ public class FadeInEffect : MonoBehaviour
     public CanvasGroup blackOverlay;
     public float fadeDuration = 3.0f;
 
+    public static FadeInEffect Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
         StartCoroutine(FadeOut());
+    }
+
+    public void OnVideoSkipped()
+    { 
+        blackOverlay.alpha = 1;
+        StopAllCoroutines();
     }
 
     IEnumerator FadeOut()
@@ -23,4 +43,5 @@ public class FadeInEffect : MonoBehaviour
         blackOverlay.alpha = 0;
         blackOverlay.gameObject.SetActive(false);
     }
+
 }

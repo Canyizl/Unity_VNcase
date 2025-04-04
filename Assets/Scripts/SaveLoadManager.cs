@@ -6,22 +6,21 @@ using UnityEngine.UI;
 using System.IO;
 using Newtonsoft.Json;
 using Unity.VisualScripting;
+using System;
+using UnityEngine.SceneManagement;
 
 public class SaveLoadManager : MonoBehaviour
 {
-    public GameObject saveLoadPanel;
     public TextMeshProUGUI panelTitle;
     public Button[] saveLoadButtons;
     public Button prevPageButton;
     public Button nextPageButton;
     public Button backButton;
 
-    public bool isSave;
     public int currentPage = Constants.DEFAULT_START_INDEX;
     public readonly int slotsPerpage = Constants.SLOTS_PER_PAGE;
     public readonly int totalSlots = Constants.TOTAL_SLOTS;
-    private System.Action<int> currentAction;
-    private System.Action menuAction;
+    private bool isLoad => GameManager.Instance.currentSaveLoadMode == GameManager.SaveLoadMode.Load;
 
     public static SaveLoadManager Instance { get; private set; }
 
@@ -40,33 +39,18 @@ public class SaveLoadManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        prevPageButton.onClick.AddListener(PrevPage);
-        nextPageButton.onClick.AddListener(NextPage);
-        backButton.onClick.AddListener(GoBack);
-        saveLoadPanel.SetActive(false);
-    }
-
-    public void ShowSavePanel(System.Action<int> action)
-    {
-        isSave = true;
-        ShowPanel(action);
-    }
-    public void ShowLoadPanel(System.Action<int> action, System.Action menuAction)
-    {
-        isSave = false;
-        ShowPanel(action);
-    }
-
-    private void ShowPanel(System.Action<int> action)
-    {
-        panelTitle.text = LocalizationManager.Instance.GetLocalizedValue(isSave ? Constants.SAVE_GAME : Constants.LOAD_GAME);
         prevPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.PREV_PAGE);
         nextPageButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.NEXT_PAGE);
         backButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.BACK);
-        currentAction = action;
+        
+        prevPageButton.onClick.AddListener(PrevPage);
+        nextPageButton.onClick.AddListener(NextPage);
+        backButton.onClick.AddListener(GoBack);
+
+        panelTitle.text = isLoad ? LocalizationManager.Instance.GetLocalizedValue(Constants.LOAD_GAME) : LocalizationManager.Instance.GetLocalizedValue(Constants.SAVE_GAME);
         UpdateUI();
-        saveLoadPanel.SetActive(true);
     }
+
     private void UpdateUI()
     {
         for (int i = 0; i < slotsPerpage; i++)
@@ -91,7 +75,7 @@ public class SaveLoadManager : MonoBehaviour
         var savePath = GenerateDataPath(index);
         var fileExists = File.Exists(savePath);
 
-        if (!isSave && !fileExists)
+        if (isLoad && !fileExists)
         {
             button.interactable = false;
         }
@@ -107,9 +91,7 @@ public class SaveLoadManager : MonoBehaviour
     }
     private void OnButtonClick(Button button, int index)
     {
-        currentAction?.Invoke(index);
-        menuAction?.Invoke();
-        if (isSave)
+        if (isLoad)
         {
             LoadStorylineAndScreenshots(button, index);
         }
@@ -118,10 +100,7 @@ public class SaveLoadManager : MonoBehaviour
             GoBack();
         }
     }
-    private string GenerateDataPath(int index)
-    {
-        return Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH, index + Constants.SAVE_FILE_EXTENSION);
-    }
+
     private void PrevPage()
     {
         if (currentPage > 0)
@@ -142,7 +121,12 @@ public class SaveLoadManager : MonoBehaviour
 
     private void GoBack()
     {
-        saveLoadPanel.SetActive(false);
+        var sceneName = GameManager.Instance.currentScene;
+        if (sceneName == Constants.GAME_SCENE)
+        {
+            GameManager.Instance.historyRecords.RemoveLast();
+        }
+        SceneManager.LoadScene(sceneName);
     }
 
     private void LoadStorylineAndScreenshots(Button button, int index)
@@ -151,19 +135,23 @@ public class SaveLoadManager : MonoBehaviour
         if (File.Exists(savePath))
         {
             string json = File.ReadAllText(savePath);
-            var saveData = JsonConvert.DeserializeObject<VNManager.SaveData>(json);
+            var saveData = JsonConvert.DeserializeObject<GameManager.SaveData>(json);
             if (saveData.savedScreenshotData != null)
             {
                 Texture2D screenshot = new Texture2D(2, 2);
                 screenshot.LoadImage(saveData.savedScreenshotData);
                 button.GetComponentInChildren<RawImage>().texture = screenshot;
             }
-            if (saveData.savedSpeakingContent != null)
+            if (saveData.savedHistoryRecords.Last != null)
             {
                 var textComponents = button.GetComponentsInChildren<TextMeshProUGUI>();
-                textComponents[0].text = saveData.savedSpeakingContent;
+                textComponents[0].text = LM.GetSpeakingContent(saveData.savedHistoryRecords.Last.Value);
                 textComponents[1].text = File.GetLastWriteTime(savePath).ToString("G");
             }
         }
+    }
+    private string GenerateDataPath(int index)
+    {
+        return Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH, index + Constants.SAVE_FILE_EXTENSION);
     }
 }

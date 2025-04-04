@@ -44,6 +44,5 @@ public class TypewritterEffect : MonoBehaviour
         textDisplay.maxVisibleCharacters = textDisplay.text.Length;
         isTyping = false;
     }
-
     public bool IsTyping() => isTyping;
 }

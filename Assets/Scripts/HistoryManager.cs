@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HistoryManager : MonoBehaviour
 {
-
     public Transform historyContent;
     public GameObject historyItemPrefab;
     public GameObject historyScrollView;
     public Button closeButton;
 
-    private LinkedList<VNManager.historyData> historyRecords;
+    private LinkedList<ExcelReader.ExcelData> historyRecords;
 
     public static HistoryManager Instance { get; private set; }
 
@@ -28,36 +28,23 @@ public class HistoryManager : MonoBehaviour
     }
     void Start()
     {
-        historyScrollView.SetActive(false);
         closeButton.onClick.AddListener(CloseHistory);
+        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = GetLocalized(Constants.CLOSE);
+        ShowHistory(GameManager.Instance.historyRecords);
     }
 
-    public void ShowHistory(LinkedList<VNManager.historyData> records)
+    public void ShowHistory(LinkedList<ExcelReader.ExcelData> records)
     {
-        closeButton.GetComponentInChildren<TextMeshProUGUI>().text = GetLocalized(Constants.CLOSE);
         foreach(Transform child in historyContent)
         {
             Destroy(child.gameObject);
         }
         historyRecords = records;
-        LinkedListNode<VNManager.historyData> currentNode = historyRecords.Last;
+        LinkedListNode<ExcelReader.ExcelData> currentNode = historyRecords.Last;
         while(currentNode != null)
         {
-            var name = currentNode.Value.chineseName;
-            var content = currentNode.Value.chineseContent;
-            switch (MenuManager.Instance.currentLanguageIndex)
-            {
-                case 0:
-                    break;
-                case 1:
-                    name = currentNode.Value.englishName;
-                    content = currentNode.Value.englishContent;
-                    break;
-                case 2:
-                    name = currentNode.Value.japaneseName;
-                    content = currentNode.Value.japaneseContent;
-                    break;
-            }
+            var name = LM.GetSpeakerName(currentNode.Value);
+            var content = LM.GetSpeakingContent(currentNode.Value);
             AddHistoryItem(name + GetLocalized(Constants.COLON) + content);
             currentNode = currentNode.Previous;
         }
@@ -68,7 +55,8 @@ public class HistoryManager : MonoBehaviour
 
     public void CloseHistory()
     {
-        historyScrollView.SetActive(false);
+        GameManager.Instance.historyRecords.RemoveLast();
+        SceneManager.LoadScene(Constants.GAME_SCENE);
     }
 
     private void AddHistoryItem(string text)
