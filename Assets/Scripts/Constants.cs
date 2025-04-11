@@ -95,4 +95,10 @@ public class Constants : MonoBehaviour
     public static string FULLSCREEN = "fullscreen";
     public static string WINDOWED = "windowed";
     public static string RESET = "reset";
+
+    public static string MASTER_VOLUME = "MasterVolume";
+    public static string MUSIC_VOLUME = "MusicVolume";
+    public static string VOICE_VOLUME = "VoiceVolume";
+
+    public static float DEFAULT_VOLUME = 0.8f;
 }

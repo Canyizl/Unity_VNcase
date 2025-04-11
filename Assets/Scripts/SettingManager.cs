@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,6 +17,12 @@ public class SettingManager : MonoBehaviour
     private Resolution defaultResolution;
     public Button defaultButton;
     public Button closeButton;
+
+    public Slider masterVolumeSlider;
+    public Slider musicVolumeSlider;
+    public Slider voiceVolumeSlider;
+    public AudioMixer audioMixer;
+
     public static SettingManager Instance { get; private set; }
 
     private void Awake()
@@ -33,19 +39,47 @@ public class SettingManager : MonoBehaviour
 
     void Start()
     {
+        AddListener();
+        Initialization();
+    }
+
+    void Initialization()
+    {
+        InitializeDisplayMode();
         InitializeResolutions();
+        InitializeButtons();
+        InitializeVolume();
+    }
+
+    void InitializeDisplayMode()
+    {
         fullscreenToggle.isOn = Screen.fullScreenMode == FullScreenMode.FullScreenWindow;
         UpdateToggleLabel(fullscreenToggle.isOn);
+    }
 
+    void InitializeButtons()
+    {
         closeButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.CLOSE);
         defaultButton.GetComponentInChildren<TextMeshProUGUI>().text = LocalizationManager.Instance.GetLocalizedValue(Constants.RESET);
-        UpdateToggleLabel(fullscreenToggle.isOn);
+    }
 
+    void InitializeVolume()
+    {
+        masterVolumeSlider.value = PlayerPrefs.GetFloat(Constants.MASTER_VOLUME, Constants.DEFAULT_VOLUME);
+        musicVolumeSlider.value = PlayerPrefs.GetFloat(Constants.MUSIC_VOLUME, Constants.DEFAULT_VOLUME);
+        voiceVolumeSlider.value = PlayerPrefs.GetFloat(Constants.VOICE_VOLUME, Constants.DEFAULT_VOLUME);
+    }
+
+    void AddListener()
+    {
         fullscreenToggle.onValueChanged.AddListener(SetDisplayMode);
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
         closeButton.onClick.AddListener(CloseSetting);
         defaultButton.onClick.AddListener(ResetSetting);
 
+        masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
+        musicVolumeSlider.onValueChanged.AddListener(SetMusicVolume);
+        voiceVolumeSlider.onValueChanged.AddListener(SetVoiceVolume);
     }
 
     void InitializeResolutions()
@@ -99,6 +133,26 @@ public class SettingManager : MonoBehaviour
         Screen.SetResolution(width, height, Screen.fullScreenMode);
     }
 
+    private float SliderValueToDecibel(float value)
+    {
+        return value > 0.0001f ? Mathf.Log10(value) * 20f : -80f;
+    }
+
+    void SetMasterVolume(float value)
+    {
+        audioMixer.SetFloat(Constants.MASTER_VOLUME, SliderValueToDecibel(value));
+    }
+
+    void SetMusicVolume(float value)
+    {
+        audioMixer.SetFloat(Constants.MUSIC_VOLUME, SliderValueToDecibel(value));
+    }
+
+    void SetVoiceVolume(float value)
+    {
+        audioMixer.SetFloat(Constants.VOICE_VOLUME, SliderValueToDecibel(value));
+    }
+
     void CloseSetting()
     {
         var sceneName = GameManager.Instance.currentScene;
@@ -106,6 +160,12 @@ public class SettingManager : MonoBehaviour
         {
             GameManager.Instance.historyRecords.RemoveLast();
         }
+
+        PlayerPrefs.SetFloat(Constants.MASTER_VOLUME, Constants.DEFAULT_VOLUME);
+        PlayerPrefs.SetFloat(Constants.MUSIC_VOLUME, Constants.DEFAULT_VOLUME);
+        PlayerPrefs.SetFloat(Constants.VOICE_VOLUME, Constants.DEFAULT_VOLUME);
+        PlayerPrefs.Save();
+
         SceneManager.LoadScene(sceneName);
     }
 
@@ -114,5 +174,13 @@ public class SettingManager : MonoBehaviour
         resolutionDropdown.value = resolutionDropdown.options.FindIndex(
             option => option.text == $"{defaultResolution.width}x{defaultResolution.height}");
         fullscreenToggle.isOn = true;
+
+        masterVolumeSlider.value = Constants.DEFAULT_VOLUME;
+        musicVolumeSlider.value = Constants.DEFAULT_VOLUME;
+        voiceVolumeSlider.value = Constants.DEFAULT_VOLUME;
+
+        SetMasterVolume(masterVolumeSlider.value);
+        SetMusicVolume(musicVolumeSlider.value);
+        SetVoiceVolume(voiceVolumeSlider.value);
     }
 }
