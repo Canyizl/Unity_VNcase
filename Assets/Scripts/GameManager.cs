@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
     public string currentScene;
     public string currentStoryFile;
     public int currentLineIndex;
-    public int currentLanguageIndex;
+    public int currentLanguageIndex = Constants.DEFAULT_LANGUAGE_INDEX;
+    public string currentLanguage = Constants.DEFAULT_LANGUAGE;
     public string currentBackgroundImg;
     public string currentBackgroundMusic;
     public bool isCharacter1Display;

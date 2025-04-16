@@ -107,8 +107,13 @@ public class MenuManager : MonoBehaviour
     private void UpdateLanguage()
     {
         currentLanguageIndex = (currentLanguageIndex + 1) % Constants.LANGUAGES.Length;
-        LocalizationManager.Instance.LoadLanguage(Constants.LANGUAGES[currentLanguageIndex]);
+
+        var language = Constants.LANGUAGES[currentLanguageIndex];
+        LocalizationManager.Instance.LoadLanguage(language);
+
         GameManager.Instance.currentLanguageIndex = currentLanguageIndex;
+        GameManager.Instance.currentLanguage = language;
+
         UpdateLanguageButtonText();
     }
 

@@ -5,6 +5,7 @@ public class FadeInEffect : MonoBehaviour
 {
     public CanvasGroup blackOverlay;
     public float fadeDuration = 3.0f;
+    public bool isEnd = false;
 
     public static FadeInEffect Instance { get; private set; }
 
@@ -21,6 +22,11 @@ public class FadeInEffect : MonoBehaviour
     }
 
     void Start()
+    {
+        
+    }
+
+    public void overlayFadeIn()
     {
         StartCoroutine(FadeOut());
     }

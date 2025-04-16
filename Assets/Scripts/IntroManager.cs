@@ -6,6 +6,7 @@ using System.IO;
 using ExcelDataReader.Log;
 using System.Collections;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class IntroManager : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class IntroManager : MonoBehaviour
     private List<string> videoList = new List<string>();
     private static string lastPlayedVideo = "";
     private bool canSkip = true;
+    public Image logoImage;
+    private float fadeInDuration = 1.0f;
+    private float displayDuration = 1.0f;
 
     public static IntroManager Instance { get; private set; }
 
@@ -32,6 +36,7 @@ public class IntroManager : MonoBehaviour
 
     void Start()
     {
+        logoImage.color = new Color(1, 1, 1, 0);
         string videoPath = Path.Combine(Application.streamingAssetsPath, Constants.VIDEO_PATH);
         if (Directory.Exists(videoPath))
         {
@@ -41,7 +46,7 @@ public class IntroManager : MonoBehaviour
                 videoList.Add(videoFile);
             }
         }
-        PlayRandomVideo();
+        StartCoroutine(FadeLogo());
     }
 
     private void Update()
@@ -52,7 +57,30 @@ public class IntroManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+    IEnumerator Fade(float startAlpha, float endAlpha, float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float alpha = Mathf.Lerp(startAlpha, endAlpha, time / duration);
+            logoImage.color = new Color(1, 1, 1, alpha);
+            yield return null;
+        }
+    }
+
+    IEnumerator FadeLogo()
+    {
+        yield return new WaitForSeconds(0.2f);
+        yield return StartCoroutine(Fade(0, 1, fadeInDuration));
+        yield return new WaitForSeconds(displayDuration);
+        yield return StartCoroutine(Fade(1, 0, fadeInDuration));
+        if (logoImage.color == new Color(1, 1, 1, 0))
+        {
+           PlayRandomVideo();
+        }
+    }
+
     void OnVideoEnd(VideoPlayer vp)
     {
         SceneManager.LoadScene(Constants.MENU_SCENE);
@@ -62,6 +90,7 @@ public class IntroManager : MonoBehaviour
     {
         if (videoList.Count > 0)
         {
+            FadeInEffect.Instance.overlayFadeIn();
             isPlaying = true;
             int randomIndex = Random.Range(0, videoList.Count);
             lastPlayedVideo = videoList[randomIndex];

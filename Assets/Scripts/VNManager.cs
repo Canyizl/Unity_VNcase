@@ -196,7 +196,7 @@ public class VNManager : MonoBehaviour
             if (storyData[currentLine].speakerName == Constants.END_OF_STORY)
             {
                 GameManager.Instance.hasStarted = false;
-                SceneManager.LoadScene(Constants.MENU_SCENE);
+                SceneManager.LoadScene(Constants.CREDITS_SCENE);
             }
             if (storyData[currentLine].speakerName == Constants.CHOICE)
             {

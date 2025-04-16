@@ -12,6 +12,7 @@ public class Constants : MonoBehaviour
     public static string GAME_SCENE = "GameScene";
     public static string INPUT_SCENE = "InputScene";
     public static string HISTORY_SCENE = "HistoryScene";
+    public static string CREDITS_SCENE = "CreditsScene";
 
 
     public static string STORY_PATH = "story";
@@ -101,4 +102,10 @@ public class Constants : MonoBehaviour
     public static string VOICE_VOLUME = "VoiceVolume";
 
     public static float DEFAULT_VOLUME = 0.8f;
+
+    public static string CREDITS_PATH = "credits";
+    public static string CREDITS_FILE_EXTENSION = ".txt";
+    public static string CREDITS_LOAD_FAILED = "Credits scrolling ended";
+    public static float CREDITS_SCROLL_SPEED = 100f;
+    public static float CREDITS_SCROLL_END_Y = 1000f;
 }
