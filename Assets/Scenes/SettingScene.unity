@@ -1280,6 +1280,10 @@ MonoBehaviour:
   resolutionDropdown: {fileID: 1227424958}
   defaultButton: {fileID: 1767234334}
   closeButton: {fileID: 1612796358}
+  masterVolumeSlider: {fileID: 999090486}
+  musicVolumeSlider: {fileID: 1238258799}
+  voiceVolumeSlider: {fileID: 512525386}
+  audioMixer: {fileID: 24100000, guid: e31fb9fc60b489c4ababbce2fd6d2572, type: 2}
 --- !u!1 &641160754
 GameObject:
   m_ObjectHideFlags: 0
@@ -1575,7 +1579,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u97F3\u91CF\u5927\u5C0F"
+  m_text: "\u603B\u97F3\u91CF\u5927\u5C0F"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1d46629358e0e644fbe3746078e04e0c, type: 2}
   m_sharedMaterial: {fileID: -5459410016884986833, guid: 1d46629358e0e644fbe3746078e04e0c, type: 2}

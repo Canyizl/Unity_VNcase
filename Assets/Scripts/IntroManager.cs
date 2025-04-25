@@ -15,10 +15,10 @@ public class IntroManager : MonoBehaviour
     public bool isPlaying = false;
     private List<string> videoList = new List<string>();
     private static string lastPlayedVideo = "";
-    private bool canSkip = true;
+    private bool canSkip = false;
     public Image logoImage;
-    private float fadeInDuration = 1.0f;
-    private float displayDuration = 1.0f;
+    private float fadeInDuration = 0.5f;
+    private float displayDuration = 0.8f;
 
     public static IntroManager Instance { get; private set; }
 
@@ -97,8 +97,7 @@ public class IntroManager : MonoBehaviour
             videoPlayer.url = lastPlayedVideo;
             videoPlayer.Play();
             videoPlayer.loopPointReached += OnVideoEnd;
-
-            EnableSkipAfterDelay(0.2f);
+            StartCoroutine(EnableSkipAfterDelay(0.3f));
         }
         else
         {
@@ -108,7 +107,7 @@ public class IntroManager : MonoBehaviour
     IEnumerator EnableSkipAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        canSkip = true; // 1Ãëºó½âËøÌø¹ý
+        canSkip = true;
     }
 
     void SkipVideo()

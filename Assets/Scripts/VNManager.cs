@@ -18,9 +18,7 @@ public class VNManager : MonoBehaviour
     public ScreenShotter screenShotter;
 
     public Image avatarImage;
-    public AudioSource vocalAudio;
     public Image backgroundImage;
-    public AudioSource backgroundMusic;
     public Image characterImage1;
     public Image characterImage2;
 
@@ -142,11 +140,7 @@ public class VNManager : MonoBehaviour
         currentLine = lineNumber;
 
         backgroundImage.gameObject.SetActive(false);
-        backgroundMusic.gameObject.SetActive(false);
-
         avatarImage.gameObject.SetActive(false);
-        vocalAudio.gameObject.SetActive(false);
-
         characterImage1.gameObject.SetActive(false);
         characterImage2.gameObject.SetActive(false);
 
@@ -320,38 +314,13 @@ public class VNManager : MonoBehaviour
     }
     #endregion
     #region Audios
-    void PlayAudio(string audioPath, AudioSource audioSource, bool isLoop)
-    {
-        AudioClip audioClip = Resources.Load<AudioClip>(audioPath);
-        if (audioClip != null)
-        {
-            audioSource.clip = audioClip;
-            audioSource.gameObject.SetActive(true);
-            audioSource.Play();
-            audioSource.loop = isLoop;
-        }
-        else
-        {
-            if (audioSource == vocalAudio)
-            {
-                Debug.LogError(Constants.AUDIO_LOAD_FALED + audioPath);
-            }
-            else if (audioSource == backgroundMusic)
-            {
-                Debug.LogError(Constants.MUSIC_LOAD_FALED + audioPath);
-            }
-        }
-    }
-
     void PlayVocalAudio(string audioFileName)
     {
-        string audioPath = Constants.VOCAL_PATH + audioFileName;
-        PlayAudio(audioPath, vocalAudio, false);
+        AudioManager.Instance.PlayVoice(audioFileName);
     }
     void PlayBackgroundAudio(string musicFileName)
     {
-        string musicPath = Constants.MUSIC_PATH + musicFileName;
-        PlayAudio(musicPath, backgroundMusic, true);
+        AudioManager.Instance.PlayBackground(musicFileName);
     }
     #endregion
     #region Image

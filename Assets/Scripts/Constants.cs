@@ -44,6 +44,8 @@ public class Constants : MonoBehaviour
     public static string MUSIC_PATH = "audio/music/";
     public static string AUDIO_LOAD_FALED = "Failed to load audio: ";
     public static string MUSIC_LOAD_FALED = "Failed to load music: ";
+    public static string MENU_MUSIC_FILE_NAME = "MenuBgm";
+    public static string CREDITS_MUSIC_FILE_NAME = "4";
 
     public static string NO_DATA_FOUND = "No data found";
     public static string END_OF_STORY = "End of story";
