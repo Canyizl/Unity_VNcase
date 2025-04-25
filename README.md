@@ -2,9 +2,11 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 本项目旨在搭建一个基础的视觉小说框架，包含完善的场景设计、UI设计；文本读取与打字机效果；自动翻页与快速翻页、保存与加载等一系列视觉小说功能。
 
+* * *
+
 04/25 version
 
-目前完成功能包括：
+### 目前完成功能包括：
 
 · IntroCutScene：开场载入logo与视频，包含淡入淡出，支持视频播放一秒后点击跳过。
 
@@ -24,7 +26,7 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 · CreditsScene：结局字幕展示，播放片尾Bgm，支持点击加速字幕，暂不支持跳过。
 
-后续待修复与加入功能包括：
+### 后续待修复与加入功能包括：
 
 · MenuScene：界面UI美化。
 
