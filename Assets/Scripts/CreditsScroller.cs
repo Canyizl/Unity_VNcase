@@ -28,7 +28,7 @@ public class CreditsScroller : MonoBehaviour
 
     void LoadCreditsFromFile()
     {
-        string path = Path.Combine(Application.streamingAssetsPath, Constants.CREDITS_PATH, "zh.txt" + Constants.CREDITS_FILE_EXTENSION); // GameManager.Instance.currentLanguage + Constants.CREDITS_FILE_EXTENSION);
+        string path = Path.Combine(Application.streamingAssetsPath, Constants.CREDITS_PATH, "zh" + Constants.CREDITS_FILE_EXTENSION); // GameManager.Instance.currentLanguage + Constants.CREDITS_FILE_EXTENSION);
 
         if (File.Exists(path))
         {

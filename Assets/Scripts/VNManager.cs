@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,10 +22,6 @@ public class VNManager : MonoBehaviour
     public Image backgroundImage;
     public Image characterImage1;
     public Image characterImage2;
-
-    public GameObject choicePanel;
-    public Button choiceButton1;
-    public Button choiceButton2;
 
     public GameObject bottomButtons;
     public Button autoButton;
@@ -50,7 +47,6 @@ public class VNManager : MonoBehaviour
 
     private bool isAutoPlay = false;
     private bool isSkip = false;
-    private bool isLoad = false;
     private int maxReachedLineIndex = 0;
 
     public static VNManager Instance { get; private set; }
@@ -71,9 +67,12 @@ public class VNManager : MonoBehaviour
     void Start()
     {
         GameManager.Instance.currentScene = Constants.GAME_SCENE;
+        currentLine = GameManager.Instance.currentLineIndex;
         InitializeSaveFilePath();
         bottomButtonAddListener();
-        InitializeAndLoadStory(GameManager.Instance.currentStoryFile, GameManager.Instance.currentLineIndex);
+        InitializeImage();
+        LoadStory(GameManager.Instance.currentStoryFile);
+        DisplayNextLine();
     }
 
     void Update()
@@ -84,7 +83,7 @@ public class VNManager : MonoBehaviour
             {
                 OpenUI();
             }
-            else if (!IsHittingBottomButtons())
+            else if (!IsHittingBottomButtons() && !ChoiceManager.Instance.choicePanel.activeSelf)
             {
                 DisplayNextLine();
             }
@@ -128,23 +127,18 @@ public class VNManager : MonoBehaviour
         closeButton.onClick.AddListener(OnCloseButtoClick);
     }
 
-    void InitializeAndLoadStory(string fileName, int lineNumber)
+    void LoadStory(string fileName)
     {
-        Initialize(lineNumber);
         LoadStoryFromFile(fileName);
-        RecoverLastBackgroundAndAction();
-        DisplayNextLine();
+        RecoverLastBackgroundAndCharacter();
     }
-    void Initialize(int lineNumber)
-    {
-        currentLine = lineNumber;
 
+    void InitializeImage()
+    {
         backgroundImage.gameObject.SetActive(false);
         avatarImage.gameObject.SetActive(false);
         characterImage1.gameObject.SetActive(false);
         characterImage2.gameObject.SetActive(false);
-
-        choicePanel.SetActive(false);
     }
 
     void LoadStoryFromFile(string fileName)
@@ -152,7 +146,7 @@ public class VNManager : MonoBehaviour
         currentStoryFileName = fileName;
         var filePath = Path.Combine(Application.streamingAssetsPath,
                         Constants.STORY_PATH,
-                        fileName + excelFileExtension
+                        fileName + Constants.STORY_FILE_EXTENSION
             );
         storyData = ExcelReader.ReadExcel(filePath);
         if (storyData == null || storyData.Count == 0)
@@ -195,6 +189,12 @@ public class VNManager : MonoBehaviour
             if (storyData[currentLine].speakerName == Constants.CHOICE)
             {
                 ShowChoices();
+            }
+            if (storyData[currentLine].speakerName == Constants.GOTO)
+            {
+                LoadStory(storyData[currentLine].speakingContent);
+                currentLine = Constants.DEFAULT_START_LINE;
+                DisplayNextLine();
             }
             return;
         }
@@ -263,8 +263,8 @@ public class VNManager : MonoBehaviour
             else
             {
                 GameManager.Instance.isCharacter2Display = true;
-                GameManager.Instance.currentCharacter2Img = data.character1ImageFileName;
-                GameManager.Instance.currentCharacter2Position = data.coordinateX1;
+                GameManager.Instance.currentCharacter2Img = data.character2ImageFileName;
+                GameManager.Instance.currentCharacter2Position = data.coordinateX2;
             }
             UpdateCharacterImage(data.character2Action, data.character2ImageFileName, characterImage2, data.coordinateX2);
         }
@@ -272,9 +272,8 @@ public class VNManager : MonoBehaviour
         currentLine++;
     }
 
-    void RecoverLastBackgroundAndAction()
+    void RecoverLastBackgroundAndCharacter()
     {
-        var data = storyData[currentLine];
         if (NotNullNorEmpty(GameManager.Instance.currentBackgroundImg))
         {
             UpdateBackgroundImage(GameManager.Instance.currentBackgroundImg);
@@ -285,13 +284,13 @@ public class VNManager : MonoBehaviour
         }
         if (GameManager.Instance.isCharacter1Display)
         {
-            UpdateCharacterImage(Constants.APPEAR_AT, GameManager.Instance.currentCharacter1Img,
-                characterImage1, GameManager.Instance.currentCharacter1Position);
+            UpdateCharacterImage(Constants.APPEAR_AT_INSTANTLY, GameManager.Instance.currentCharacter1Img,
+                                characterImage1, GameManager.Instance.currentCharacter1Position);
         }
         if (GameManager.Instance.isCharacter2Display)
         {
-            UpdateCharacterImage(Constants.APPEAR_AT, GameManager.Instance.currentCharacter2Img,
-                characterImage2, GameManager.Instance.currentCharacter2Position);
+            UpdateCharacterImage(Constants.APPEAR_AT_INSTANTLY, GameManager.Instance.currentCharacter2Img,
+                                characterImage2, GameManager.Instance.currentCharacter2Position);
         }
     }
 
@@ -304,13 +303,16 @@ public class VNManager : MonoBehaviour
     void ShowChoices()
     {
         var data = storyData[currentLine];
-        choiceButton1.onClick.RemoveAllListeners();
-        choiceButton2.onClick.RemoveAllListeners();
-        choicePanel.SetActive(true);
-        choiceButton1.GetComponentInChildren<TextMeshProUGUI>().text = data.speakingContent;
-        choiceButton1.onClick.AddListener(() => InitializeAndLoadStory(data.avatarImageFileName, defaultStartLine));
-        choiceButton2.GetComponentInChildren<TextMeshProUGUI>().text = data.vocalAudioFileName;
-        choiceButton2.onClick.AddListener(() => InitializeAndLoadStory(data.backgroundImageFileName, defaultStartLine));
+        var choices = LM.GetSpeakingContent(data).Split(Constants.ChoiceDelimiter).Select(s => s.Trim()).ToList();
+        var actions = data.avatarImageFileName.Split(Constants.ChoiceDelimiter).Select(s => s.Trim()).ToList();
+        ChoiceManager.Instance.ShowChoices(choices, actions, HandleChoice);
+    }
+
+    void HandleChoice(string selectedChoice)
+    {
+        currentLine = Constants.DEFAULT_START_LINE;
+        LoadStory(selectedChoice);
+        DisplayNextLine();
     }
     #endregion
     #region Audios
@@ -342,6 +344,7 @@ public class VNManager : MonoBehaviour
 
     void UpdateCharacterImage(string action, string imageFileName, Image characterImage, string x)
     {
+        // 根据action执行对应的动画或操作
         if (action.StartsWith(Constants.APPEAR_AT))
         {
             string imagePath = Constants.CHARACTER_PATH + imageFileName;
@@ -350,13 +353,18 @@ public class VNManager : MonoBehaviour
                 UpdateImage(imagePath, characterImage);
                 var newPosition = new Vector2(float.Parse(x), characterImage.rectTransform.anchoredPosition.y);
                 characterImage.rectTransform.anchoredPosition = newPosition;
-                characterImage.DOFade(1, (isLoad ? 0 : Constants.DURATION_TIME)).From(0);
+
+                var duration = Constants.DURATION_TIME;
+                if (action == Constants.APPEAR_AT_INSTANTLY)
+                {
+                    duration = 0;
+                }
+                characterImage.DOFade(1, duration).From(0);
             }
             else
             {
                 Debug.LogError(Constants.COORDINATE_MISSING);
             }
-
         }
         else if (action == Constants.DISAPPEAR)
         {
@@ -367,6 +375,10 @@ public class VNManager : MonoBehaviour
             if (NotNullNorEmpty(x))
             {
                 characterImage.rectTransform.DOAnchorPosX(float.Parse(x), Constants.DURATION_TIME);
+            }
+            else
+            {
+                Debug.LogError(Constants.COORDINATE_MISSING);
             }
         }
     }

@@ -18,6 +18,7 @@ public class Constants : MonoBehaviour
     public static string STORY_PATH = "story";
     public static string DEFAULT_STORY_FILE_NAME = "1";
     public static string EXCEL_FILE_EXTENSION = ".xlsx";
+    public static string STORY_FILE_EXTENSION = ".xlsx";
     public static int DEFAULT_START_LINE = 1;
 
     public static string AVATAR_PATH = "image/avatar/";
@@ -50,9 +51,12 @@ public class Constants : MonoBehaviour
     public static string NO_DATA_FOUND = "No data found";
     public static string END_OF_STORY = "End of story";
     public static string CHOICE = "choice";
+    public static string GOTO = "goto";
+    public static char ChoiceDelimiter = '\n';
 
 
     public static string APPEAR_AT = "appearAt";
+    public static string APPEAR_AT_INSTANTLY = "appearAtInstantly";
     public static string DISAPPEAR = "disappear";
     public static string MOVE_TO = "moveTo";
     public static int DURATION_TIME = 1;

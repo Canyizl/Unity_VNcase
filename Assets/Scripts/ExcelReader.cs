@@ -1,11 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using ExcelDataReader;
-using UnityEngine;
-
-public class ExcelReader: MonoBehaviour
+using System.Text;
+public class ExcelReader
 {
     public struct ExcelData
     {
@@ -61,8 +58,7 @@ public class ExcelReader: MonoBehaviour
             }
         }
         return excelData;
-    }    
-
+    }
     private static string GetCellString(IExcelDataReader reader, int index)
     {
         return reader.IsDBNull(index) ? string.Empty : reader.GetValue(index)?.ToString();
