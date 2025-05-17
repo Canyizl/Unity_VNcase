@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -22,19 +21,17 @@ public class ChoiceManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    private void Start()
+    void Start()
     {
         choicePanel.SetActive(false);
     }
-
     public void ShowChoices(List<string> options, List<string> actions, Action<string> onChoiceSelected)
     {
-        foreach(Transform child in choiceButtonContainer)
+        foreach (Transform child in choiceButtonContainer)
         {
             Destroy(child.gameObject);
         }
-        for(int i = 0; i < options.Count; i++)
+        for (int i = 0; i < options.Count; i++)
         {
             Button choiceButton = Instantiate(choiceButtonPrefab, choiceButtonContainer);
             choiceButton.GetComponentInChildren<TextMeshProUGUI>().text = options[i];
@@ -45,8 +42,7 @@ public class ChoiceManager : MonoBehaviour
                 onChoiceSelected?.Invoke(actions[index]);
                 choicePanel.SetActive(false);
             });
-            choicePanel.gameObject.SetActive(true);
         }
+        choicePanel.SetActive(true);
     }
-
 }

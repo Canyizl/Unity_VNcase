@@ -55,7 +55,7 @@ public class MenuManager : MonoBehaviour
             }
             else
             {
-                Debug.LogError(Constants.IMAGE_LOAD_FALED + imagePath);
+                Debug.LogError(Constants.IMAGE_LOAD_FAILED + imagePath);
             }
         }
     }

@@ -1,6 +1,4 @@
 using DG.Tweening;
-using Newtonsoft.Json;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,13 +7,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
 public class VNManager : MonoBehaviour
 {
     #region Variables
     public GameObject dialogueBox;
     public TextMeshProUGUI speakerName;
-    public TypewritterEffect typewritterEffect;
+    public TypewriterEffect typewriterEffect;
     public ScreenShotter screenShotter;
 
     public Image avatarImage;
@@ -29,28 +26,20 @@ public class VNManager : MonoBehaviour
     public Button saveButton;
     public Button loadButton;
     public Button historyButton;
-    public Button settingsButton;
+    public Button settingButton;
     public Button homeButton;
     public Button closeButton;
 
-    private readonly int defaultStartLine = Constants.DEFAULT_START_LINE;
-    private readonly string excelFileExtension = Constants.EXCEL_FILE_EXTENSION;
-
-    private string saveFolderPath;
-    private byte[] screenshotData;
-    private string currentSpeakingContent;
-
     private List<ExcelReader.ExcelData> storyData;
-    private int currentLine = Constants.DEFAULT_START_LINE;
     private string currentStoryFileName;
+    private int currentLine;
+    private string currentSpeakingContent;
     private float currentTypingSpeed = Constants.DEFAULT_TYPING_SPEED;
 
     private bool isAutoPlay = false;
     private bool isSkip = false;
     private int maxReachedLineIndex = 0;
-
     public static VNManager Instance { get; private set; }
-
     #endregion
     #region Lifecycle
     private void Awake()
@@ -66,15 +55,38 @@ public class VNManager : MonoBehaviour
     }
     void Start()
     {
-        GameManager.Instance.currentScene = Constants.GAME_SCENE;
-        currentLine = GameManager.Instance.currentLineIndex;
-        InitializeSaveFilePath();
-        bottomButtonAddListener();
+        var gm = GameManager.Instance;
+        gm.hasStarted = true;
+        gm.currentScene = Constants.GAME_SCENE;
+        if (gm.pendingData != null)
+        {
+            var savedData = gm.pendingData;
+            gm.pendingData = null;
+
+            gm.currentStoryFile = savedData.savedStoryFileName;
+            savedData.savedLine--;
+            gm.currentLineIndex = savedData.savedLine;
+
+            savedData.savedHistoryRecords.RemoveLast();
+            gm.historyRecords = savedData.savedHistoryRecords;
+            gm.playerName = savedData.savedPlayerName;
+
+            gm.currentBackgroundImg = savedData.savedBackgroundImg;
+            gm.currentBackgroundMusic = savedData.savedBackgroundMusic;
+
+            gm.currentCharacter1Img = savedData.savedCharacter1Img;
+            gm.currentCharacter2Img = savedData.savedCharacter2Img;
+            gm.currentCharacter1Position = savedData.savedCharacter1Position;
+            gm.currentCharacter2Position = savedData.savedCharacter2Position;
+            gm.isCharacter1Display = savedData.savedIsCharacter1Display;
+            gm.isCharacter2Display = savedData.savedIsCharacter2Display;
+        }
+        currentLine = gm.currentLineIndex;
+        bottomButtonsAddListener();
         InitializeImage();
-        LoadStory(GameManager.Instance.currentStoryFile);
+        LoadStory(gm.currentStoryFile);
         DisplayNextLine();
     }
-
     void Update()
     {
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
@@ -106,33 +118,22 @@ public class VNManager : MonoBehaviour
     }
     #endregion
     #region Initialization
-
-    void InitializeSaveFilePath()
-    {
-        saveFolderPath = Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH);
-        if (!Directory.Exists(saveFolderPath))
-        {
-            Directory.CreateDirectory(saveFolderPath);
-        }
-    }
-    void bottomButtonAddListener()
+    void bottomButtonsAddListener()
     {
         autoButton.onClick.AddListener(OnAutoButtonClick);
         skipButton.onClick.AddListener(OnSkipButtonClick);
         saveButton.onClick.AddListener(OnSaveButtonClick);
         loadButton.onClick.AddListener(OnLoadButtonClick);
         historyButton.onClick.AddListener(OnHistoryButtonClick);
-        settingsButton.onClick.AddListener(OnSettingButtonClick);
-        homeButton.onClick.AddListener(OnHomeButtoClick);
-        closeButton.onClick.AddListener(OnCloseButtoClick);
+        settingButton.onClick.AddListener(OnSettingButtonClick);
+        homeButton.onClick.AddListener(OnHomeButtonClick);
+        closeButton.onClick.AddListener(OnCloseButtonClick);
     }
-
     void LoadStory(string fileName)
     {
         LoadStoryFromFile(fileName);
         RecoverLastBackgroundAndCharacter();
     }
-
     void InitializeImage()
     {
         backgroundImage.gameObject.SetActive(false);
@@ -140,14 +141,12 @@ public class VNManager : MonoBehaviour
         characterImage1.gameObject.SetActive(false);
         characterImage2.gameObject.SetActive(false);
     }
-
     void LoadStoryFromFile(string fileName)
     {
         currentStoryFileName = fileName;
-        var filePath = Path.Combine(Application.streamingAssetsPath,
+        string filePath = Path.Combine(Application.streamingAssetsPath,
                         Constants.STORY_PATH,
-                        fileName + Constants.STORY_FILE_EXTENSION
-            );
+                        fileName + Constants.STORY_FILE_EXTENSION);
         storyData = ExcelReader.ReadExcel(filePath);
         if (storyData == null || storyData.Count == 0)
         {
@@ -198,23 +197,22 @@ public class VNManager : MonoBehaviour
             }
             return;
         }
-        if (typewritterEffect.IsTyping())
+        if (typewriterEffect.IsTyping())
         {
-            typewritterEffect.CompleteLine();
+            typewriterEffect.CompleteLine();
         }
         else
         {
             DisplayThisLine();
         }
     }
-
     void DisplayThisLine()
     {
         GameManager.Instance.currentLineIndex = currentLine;
         var data = storyData[currentLine];
         speakerName.text = LM.GetSpeakerName(data);
         currentSpeakingContent = LM.GetSpeakingContent(data);
-        typewritterEffect.StartTyping(currentSpeakingContent, currentTypingSpeed);
+        typewriterEffect.StartTyping(currentSpeakingContent, currentTypingSpeed);
 
         GameManager.Instance.historyRecords.AddLast(data);
 
@@ -238,7 +236,7 @@ public class VNManager : MonoBehaviour
         if (NotNullNorEmpty(data.backgroundMusicFileName))
         {
             GameManager.Instance.currentBackgroundMusic = data.backgroundMusicFileName;
-            PlayBackgroundAudio(data.backgroundMusicFileName);
+            PlayBackgroundMusic(data.backgroundMusicFileName);
         }
         if (NotNullNorEmpty(data.character1Action))
         {
@@ -252,7 +250,8 @@ public class VNManager : MonoBehaviour
                 GameManager.Instance.currentCharacter1Img = data.character1ImageFileName;
                 GameManager.Instance.currentCharacter1Position = data.coordinateX1;
             }
-            UpdateCharacterImage(data.character1Action, data.character1ImageFileName, characterImage1, data.coordinateX1);
+            UpdateCharacterImage(data.character1Action, data.character1ImageFileName,
+                characterImage1, data.coordinateX1);
         }
         if (NotNullNorEmpty(data.character2Action))
         {
@@ -266,21 +265,21 @@ public class VNManager : MonoBehaviour
                 GameManager.Instance.currentCharacter2Img = data.character2ImageFileName;
                 GameManager.Instance.currentCharacter2Position = data.coordinateX2;
             }
-            UpdateCharacterImage(data.character2Action, data.character2ImageFileName, characterImage2, data.coordinateX2);
+            UpdateCharacterImage(data.character2Action, data.character2ImageFileName,
+                characterImage2, data.coordinateX2);
         }
-
         currentLine++;
     }
-
     void RecoverLastBackgroundAndCharacter()
     {
         if (NotNullNorEmpty(GameManager.Instance.currentBackgroundImg))
         {
             UpdateBackgroundImage(GameManager.Instance.currentBackgroundImg);
         }
+
         if (NotNullNorEmpty(GameManager.Instance.currentBackgroundMusic))
         {
-            PlayBackgroundAudio(GameManager.Instance.currentBackgroundMusic);
+            PlayBackgroundMusic(GameManager.Instance.currentBackgroundMusic);
         }
         if (GameManager.Instance.isCharacter1Display)
         {
@@ -293,7 +292,6 @@ public class VNManager : MonoBehaviour
                                 characterImage2, GameManager.Instance.currentCharacter2Position);
         }
     }
-
     bool NotNullNorEmpty(string str)
     {
         return !string.IsNullOrEmpty(str);
@@ -303,11 +301,16 @@ public class VNManager : MonoBehaviour
     void ShowChoices()
     {
         var data = storyData[currentLine];
-        var choices = LM.GetSpeakingContent(data).Split(Constants.ChoiceDelimiter).Select(s => s.Trim()).ToList();
-        var actions = data.avatarImageFileName.Split(Constants.ChoiceDelimiter).Select(s => s.Trim()).ToList();
+        var choices = LM.GetSpeakingContent(data)
+                        .Split(Constants.ChoiceDelimiter)
+                        .Select(s => s.Trim())
+                        .ToList();
+        var actions = data.avatarImageFileName
+                        .Split(Constants.ChoiceDelimiter)
+                        .Select(s => s.Trim())
+                        .ToList();
         ChoiceManager.Instance.ShowChoices(choices, actions, HandleChoice);
     }
-
     void HandleChoice(string selectedChoice)
     {
         currentLine = Constants.DEFAULT_START_LINE;
@@ -320,18 +323,17 @@ public class VNManager : MonoBehaviour
     {
         AudioManager.Instance.PlayVoice(audioFileName);
     }
-    void PlayBackgroundAudio(string musicFileName)
+    void PlayBackgroundMusic(string musicFileName)
     {
         AudioManager.Instance.PlayBackground(musicFileName);
     }
     #endregion
-    #region Image
+    #region Images
     void UpdateAvatarImage(string imageFileName)
     {
-        string imagePath = Constants.AVATAR_PATH + imageFileName;
+        var imagePath = Constants.AVATAR_PATH + imageFileName;
         UpdateImage(imagePath, avatarImage);
     }
-
     void UpdateBackgroundImage(string imageFileName)
     {
         string imagePath = Constants.BACKGROUND_PATH + imageFileName;
@@ -341,7 +343,6 @@ public class VNManager : MonoBehaviour
             GameManager.Instance.unlockedBackgrounds.Add(imageFileName);
         }
     }
-
     void UpdateCharacterImage(string action, string imageFileName, Image characterImage, string x)
     {
         // 根据action执行对应的动画或操作
@@ -382,13 +383,11 @@ public class VNManager : MonoBehaviour
             }
         }
     }
-
     void UpdateButtonImage(string imageFileName, Button button)
     {
         string imagePath = Constants.BUTTON_PATH + imageFileName;
         UpdateImage(imagePath, button.image);
     }
-
     void UpdateImage(string imagePath, Image image)
     {
         Sprite sprite = Resources.Load<Sprite>(imagePath);
@@ -399,7 +398,7 @@ public class VNManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError(Constants.IMAGE_LOAD_FALED + imagePath);
+            Debug.LogError(Constants.IMAGE_LOAD_FAILED + imagePath);
         }
     }
     #endregion
@@ -410,7 +409,8 @@ public class VNManager : MonoBehaviour
         return RectTransformUtility.RectangleContainsScreenPoint(
             bottomButtons.GetComponent<RectTransform>(),
             Input.mousePosition,
-            Camera.main);
+            Camera.main
+            );
     }
     #endregion
     #region Auto
@@ -427,7 +427,7 @@ public class VNManager : MonoBehaviour
     {
         while (isAutoPlay)
         {
-            if (!typewritterEffect.IsTyping())
+            if (!typewriterEffect.IsTyping())
             {
                 DisplayNextLine();
             }
@@ -460,18 +460,6 @@ public class VNManager : MonoBehaviour
         currentTypingSpeed = Constants.SKIP_MODE_TYPING_SPEED;
         StartCoroutine(SkipToMaxReachedLine());
     }
-    void EndSkip()
-    {
-        isSkip = false;
-        currentTypingSpeed = Constants.DEFAULT_TYPING_SPEED;
-        UpdateButtonImage(Constants.SKIP_OFF, skipButton);
-    }
-    void CtrlSkip()
-    {
-        currentTypingSpeed = Constants.SKIP_MODE_TYPING_SPEED;
-        UpdateButtonImage(Constants.SKIP_ON, skipButton);
-        StartCoroutine(SkipWhilePressingCtrl());
-    }
     private IEnumerator SkipToMaxReachedLine()
     {
         while (isSkip)
@@ -487,6 +475,18 @@ public class VNManager : MonoBehaviour
             yield return new WaitForSeconds(Constants.DEFAULT_SKIP_WAITTING_SECONDS);
         }
     }
+    void EndSkip()
+    {
+        isSkip = false;
+        currentTypingSpeed = Constants.DEFAULT_TYPING_SPEED;
+        UpdateButtonImage(Constants.SKIP_OFF, skipButton);
+    }
+    void CtrlSkip()
+    {
+        currentTypingSpeed = Constants.SKIP_MODE_TYPING_SPEED;
+        UpdateButtonImage(Constants.SKIP_ON, skipButton);
+        StartCoroutine(SkipWhilePressingCtrl());
+    }
     private IEnumerator SkipWhilePressingCtrl()
     {
         while (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
@@ -500,8 +500,33 @@ public class VNManager : MonoBehaviour
     #region Save
     void OnSaveButtonClick()
     {
+        SaveData();
         GameManager.Instance.currentSaveLoadMode = GameManager.SaveLoadMode.Save;
         SceneManager.LoadScene(Constants.SAVE_LOAD_SCENE);
+    }
+    void SaveData()
+    {
+        CloseUI();
+        Texture2D screenshot = screenShotter.CaptureScreenshot();
+        OpenUI();
+
+        var gm = GameManager.Instance;
+        gm.pendingData = new GameManager.SaveData
+        {
+            savedStoryFileName = currentStoryFileName,
+            savedLine = currentLine,
+            savedScreenshotData = screenshot.EncodeToPNG(),
+            savedHistoryRecords = gm.historyRecords,
+            savedPlayerName = gm.playerName,
+            savedBackgroundImg = gm.currentBackgroundImg,
+            savedBackgroundMusic = gm.currentBackgroundMusic,
+            savedCharacter1Img = gm.currentCharacter1Img,
+            savedCharacter2Img = gm.currentCharacter2Img,
+            savedCharacter1Position = gm.currentCharacter1Position,
+            savedCharacter2Position = gm.currentCharacter2Position,
+            savedIsCharacter1Display = gm.isCharacter1Display,
+            savedIsCharacter2Display = gm.isCharacter2Display
+        };
     }
     #endregion
     #region Load
@@ -509,30 +534,6 @@ public class VNManager : MonoBehaviour
     {
         GameManager.Instance.currentSaveLoadMode = GameManager.SaveLoadMode.Load;
         SceneManager.LoadScene(Constants.SAVE_LOAD_SCENE);
-    }
-    #endregion
-    #region Home
-    void OnHomeButtoClick()
-    {
-        SceneManager.LoadScene(Constants.MENU_SCENE);
-    }
-    #endregion
-    #region Close
-    void OnCloseButtoClick()
-    {
-        CloseUI();
-    }
-
-    void OpenUI()
-    {
-        dialogueBox.SetActive(true);
-        bottomButtons.SetActive(true);
-    }
-
-    void CloseUI()
-    {
-        dialogueBox.SetActive(false);
-        bottomButtons.SetActive(false);
     }
     #endregion
     #region History
@@ -545,6 +546,28 @@ public class VNManager : MonoBehaviour
     void OnSettingButtonClick()
     {
         SceneManager.LoadScene(Constants.SETTING_SCENE);
+    }
+    #endregion
+    #region Home
+    void OnHomeButtonClick()
+    {
+        SceneManager.LoadScene(Constants.MENU_SCENE);
+    }
+    #endregion
+    #region Close
+    void OnCloseButtonClick()
+    {
+        CloseUI();
+    }
+    void OpenUI()
+    {
+        dialogueBox.SetActive(true);
+        bottomButtons.SetActive(true);
+    }
+    void CloseUI()
+    {
+        dialogueBox.SetActive(false);
+        bottomButtons.SetActive(false);
     }
     #endregion
     #endregion

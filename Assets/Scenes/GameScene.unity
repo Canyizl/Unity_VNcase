@@ -991,7 +991,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueBox: {fileID: 848930875}
   speakerName: {fileID: 460819550}
-  typewritterEffect: {fileID: 48376883}
+  typewriterEffect: {fileID: 48376883}
   screenShotter: {fileID: 1126126932}
   avatarImage: {fileID: 1374498533}
   backgroundImage: {fileID: 1364249224}
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   saveButton: {fileID: 744763561}
   loadButton: {fileID: 1088823661}
   historyButton: {fileID: 1040267655}
-  settingsButton: {fileID: 1447266563}
+  settingButton: {fileID: 1447266563}
   homeButton: {fileID: 458526284}
   closeButton: {fileID: 204924552}
 --- !u!4 &358212860

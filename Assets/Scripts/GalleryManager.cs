@@ -83,7 +83,7 @@ public class GalleryManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError(Constants.IMAGE_LOAD_FALED + imagePath);
+            Debug.LogError(Constants.IMAGE_LOAD_FAILED + imagePath);
         }
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => OnButtonClick(button, index));
@@ -108,7 +108,7 @@ public class GalleryManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError(Constants.BIG_IMAGE_LOAD_FALED + imagePath);
+            Debug.LogError(Constants.BIG_IMAGE_LOAD_FAILED + imagePath);
         }
     }
 

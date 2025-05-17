@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
-using System;
 using UnityEngine.SceneManagement;
 
 public class SaveLoadManager : MonoBehaviour
@@ -72,7 +68,7 @@ public class SaveLoadManager : MonoBehaviour
         button.gameObject.SetActive(true);
         button.interactable = true;
 
-        var savePath = GenerateDataPath(index);
+        var savePath = GameManager.Instance.GenerateDataPath(index);
         var fileExists = File.Exists(savePath);
 
         if (isLoad && !fileExists)
@@ -91,13 +87,15 @@ public class SaveLoadManager : MonoBehaviour
     }
     private void OnButtonClick(Button button, int index)
     {
-        if (isLoad)
+        if (!isLoad)
         {
+            GameManager.Instance.Save(index);
             LoadStorylineAndScreenshots(button, index);
         }
         else
         {
-            GoBack();
+            GameManager.Instance.Load(index);
+            SceneManager.LoadScene(Constants.GAME_SCENE);
         }
     }
 
@@ -126,12 +124,13 @@ public class SaveLoadManager : MonoBehaviour
         {
             GameManager.Instance.historyRecords.RemoveLast();
         }
+        GameManager.Instance.pendingData = null;
         SceneManager.LoadScene(sceneName);
     }
 
     private void LoadStorylineAndScreenshots(Button button, int index)
     {
-        var savePath = GenerateDataPath(index);
+        var savePath = GameManager.Instance.GenerateDataPath(index);
         if (File.Exists(savePath))
         {
             string json = File.ReadAllText(savePath);
@@ -150,8 +149,5 @@ public class SaveLoadManager : MonoBehaviour
             }
         }
     }
-    private string GenerateDataPath(int index)
-    {
-        return Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH, index + Constants.SAVE_FILE_EXTENSION);
-    }
+
 }

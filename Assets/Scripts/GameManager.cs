@@ -1,7 +1,7 @@
-using System.Collections;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
-using static VNManager;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,18 +24,40 @@ public class GameManager : MonoBehaviour
     public HashSet<string> unlockedBackgrounds = new HashSet<string>();
     public Dictionary<string, int> maxReachedLineIndices = new Dictionary<string, int>();
     public LinkedList<ExcelReader.ExcelData> historyRecords;
-
-    public enum SaveLoadMode { Save, Load}
-    public SaveLoadMode currentSaveLoadMode;
+    public enum SaveLoadMode { None, Save, Load }
+    public SaveLoadMode currentSaveLoadMode { get; set; } = SaveLoadMode.None;
+    public SaveData pendingData;
+    public void Save(int slotIndex)
+    {
+        string path = GenerateDataPath(slotIndex);
+        File.WriteAllText(path, JsonConvert.SerializeObject(pendingData, Formatting.Indented));
+    }
+    public void Load(int slotIndex)
+    {
+        string path = GenerateDataPath(slotIndex);
+        pendingData = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(path));
+    }
+    public string GenerateDataPath(int index)
+    {
+        return Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH, index + Constants.SAVE_FILE_EXTENSION);
+    }
     public class SaveData
     {
         public string savedStoryFileName;
         public int savedLine;
         public byte[] savedScreenshotData;
         public LinkedList<ExcelReader.ExcelData> savedHistoryRecords;
+        public string savedBackgroundImg;
+        public string savedBackgroundMusic;
+        public string savedCharacter1Img;
+        public string savedCharacter2Img;
+        public string savedCharacter1Position;
+        public string savedCharacter2Position;
+        public bool savedIsCharacter1Display;
+        public bool savedIsCharacter2Display;
+        public string savedPlayerName;
     }
     public static GameManager Instance { get; private set; }
-
     private void Awake()
     {
         if (Instance == null)

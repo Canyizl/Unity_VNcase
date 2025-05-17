@@ -51,7 +51,7 @@ public class AudioManager : MonoBehaviour
         AudioClip clip = Resources.Load<AudioClip>(Constants.MUSIC_PATH + musicFileName);
         if (clip == null)
         {
-            Debug.LogError(Constants.AUDIO_LOAD_FALED + musicFileName);
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + musicFileName);
             return;
         }
         if (musicSource.clip == clip)
@@ -67,7 +67,7 @@ public class AudioManager : MonoBehaviour
         AudioClip clip = Resources.Load<AudioClip>(Constants.VOCAL_PATH + voiceFileName);
         if (clip == null)
         {
-            Debug.LogError(Constants.AUDIO_LOAD_FALED + voiceFileName);
+            Debug.LogError(Constants.AUDIO_LOAD_FAILED + voiceFileName);
             return;
         }
         voiceSource.clip = clip;

@@ -26,8 +26,8 @@ public class Constants : MonoBehaviour
     public static string BUTTON_PATH = "image/button/";
     public static string CHARACTER_PATH = "image/character/";
     public static string THUMBNAIL_PATH = "image/thumbnail/";
-    public static string IMAGE_LOAD_FALED = "Failed to load image: ";
-    public static string BIG_IMAGE_LOAD_FALED = "Failed to load image: ";
+    public static string IMAGE_LOAD_FAILED = "Failed to load image: ";
+    public static string BIG_IMAGE_LOAD_FAILED = "Failed to load image: ";
 
     public static float DEFAULT_TYPING_SPEED = 0.05f;
     public static float SKIP_MODE_TYPING_SPEED = 0.02f;
@@ -43,8 +43,8 @@ public class Constants : MonoBehaviour
 
     public static string VOCAL_PATH = "audio/vocal/";
     public static string MUSIC_PATH = "audio/music/";
-    public static string AUDIO_LOAD_FALED = "Failed to load audio: ";
-    public static string MUSIC_LOAD_FALED = "Failed to load music: ";
+    public static string AUDIO_LOAD_FAILED = "Failed to load audio: ";
+    public static string MUSIC_LOAD_FAILED = "Failed to load music: ";
     public static string MENU_MUSIC_FILE_NAME = "MenuBgm";
     public static string CREDITS_MUSIC_FILE_NAME = "4";
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class TypewritterEffect : MonoBehaviour
+public class TypewriterEffect : MonoBehaviour
 {
     public TextMeshProUGUI textDisplay;
     private float typingSpeed;

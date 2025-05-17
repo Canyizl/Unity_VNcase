@@ -11,7 +11,7 @@ public class CreditsScroller : MonoBehaviour
     void Start()
     {
         LoadCreditsFromFile();
-
+        AudioManager.Instance.PlayBackground("CreditBgm");
         creditsText.anchoredPosition = new Vector2(creditsText.anchoredPosition.x, -Screen.height);
     }
 
