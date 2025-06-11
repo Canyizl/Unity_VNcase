@@ -4,7 +4,7 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 * * *
 
-05/17 version
+06.11 version
 
 ### 目前完成功能包括：
 
@@ -18,7 +18,7 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 · HistoryScene：历史记录实现。
 
-· SaveLoadScene：实现存档与读档的UI设计，支持翻页，支持保存时保存当前场景图片与剧本。
+· SaveLoadScene：实现存档与读档的UI设计，支持翻页，支持保存时保存当前场景图片与剧本。支持覆盖存档，删除存档。
 
 · SettingScene：全屏窗口化设置，分辨率设置，总音量大小设置，背景音大小设置，人声大小设置，恢复默认设置。
 

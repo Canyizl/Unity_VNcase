@@ -27,5 +27,7 @@
   "fullscreen": "Fullscreen",
   "apply": "Apply",
   "reset": "Reset",
-  "close": "Close"
+  "close": "Close",
+  "confirm_delete_save_file": "Delete this save file?",
+  "confirm_cover_save_file": "Overwrite this save file?"
 }

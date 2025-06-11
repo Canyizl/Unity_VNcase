@@ -54,6 +54,9 @@ public class Constants : MonoBehaviour
     public static string GOTO = "goto";
     public static char ChoiceDelimiter = '\n';
 
+    public static string CONFIRM_DELETE_SAVE_FILE = "confirm_delete_save_file";
+    public static string CONFIRM_COVER_SAVE_FILE = "confirm_cover_save_file";
+
 
     public static string APPEAR_AT = "appearAt";
     public static string APPEAR_AT_INSTANTLY = "appearAtInstantly";
