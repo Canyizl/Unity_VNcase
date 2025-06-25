@@ -78,8 +78,7 @@ public class MenuManager : MonoBehaviour
         GameManager.Instance.currentLineIndex = Constants.DEFAULT_START_LINE;
         GameManager.Instance.currentBackgroundImg = string.Empty;
         GameManager.Instance.currentBackgroundMusic = string.Empty;
-        GameManager.Instance.isCharacter1Display = false;
-        GameManager.Instance.isCharacter2Display = false;
+        GameManager.Instance.currentCharacterData.Clear();
         GameManager.Instance.historyRecords = new LinkedList<ExcelReader.ExcelData>();
         SceneManager.LoadScene(Constants.INPUT_SCENE);
     }

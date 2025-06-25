@@ -17,8 +17,6 @@ public class VNManager : MonoBehaviour
 
     public Image avatarImage;
     public Image backgroundImage;
-    public Image characterImage1;
-    public Image characterImage2;
 
     public GameObject bottomButtons;
     public Button autoButton;
@@ -76,12 +74,7 @@ public class VNManager : MonoBehaviour
             gm.currentBackgroundImg = savedData.savedBackgroundImg;
             gm.currentBackgroundMusic = savedData.savedBackgroundMusic;
 
-            gm.currentCharacter1Img = savedData.savedCharacter1Img;
-            gm.currentCharacter2Img = savedData.savedCharacter2Img;
-            gm.currentCharacter1Position = savedData.savedCharacter1Position;
-            gm.currentCharacter2Position = savedData.savedCharacter2Position;
-            gm.isCharacter1Display = savedData.savedIsCharacter1Display;
-            gm.isCharacter2Display = savedData.savedIsCharacter2Display;
+            gm.currentCharacterData = savedData.savedCharacters;
         }
         currentLine = gm.currentLineIndex;
         bottomButtonsAddListener();
@@ -142,8 +135,6 @@ public class VNManager : MonoBehaviour
     {
         backgroundImage.gameObject.SetActive(false);
         avatarImage.gameObject.SetActive(false);
-        characterImage1.gameObject.SetActive(false);
-        characterImage2.gameObject.SetActive(false);
     }
     void LoadStoryFromFile(string fileName)
     {
@@ -242,35 +233,38 @@ public class VNManager : MonoBehaviour
             GameManager.Instance.currentBackgroundMusic = data.backgroundMusicFileName;
             PlayBackgroundMusic(data.backgroundMusicFileName);
         }
-        if (NotNullNorEmpty(data.character1Action))
+        foreach (var cmd in data.characterCommands)
         {
-            if (data.character1Action == Constants.DISAPPEAR)
+            if (cmd.action == Constants.DISAPPEAR)
             {
-                GameManager.Instance.isCharacter1Display = false;
+                GameManager.Instance.currentCharacterData.RemoveAll(c => c.characterID == cmd.characterID);
+                CharacterManager.Instance.HideCharacter(cmd.characterID);
             }
             else
             {
-                GameManager.Instance.isCharacter1Display = true;
-                GameManager.Instance.currentCharacter1Img = data.character1ImageFileName;
-                GameManager.Instance.currentCharacter1Position = data.coordinateX1;
+                var state = new GameManager.CharacterSaveData
+                {
+                    characterID = cmd.characterID,
+                    expressionName = cmd.expressionName,
+                    positionX = cmd.positionX
+                };
+
+                GameManager.Instance.currentCharacterData.RemoveAll(c => c.characterID == cmd.characterID);
+                GameManager.Instance.currentCharacterData.Add(state);
+
+                if (cmd.action.StartsWith(Constants.APPEAR_AT))
+                {
+                    CharacterManager.Instance.ShowCharacter(
+                        cmd.characterID,
+                        new Vector2(cmd.positionX, 0f),
+                        cmd.expressionName
+                        );
+                }
+                if (cmd.action.StartsWith(Constants.MOVE_TO))
+                {
+                    // pass
+                }
             }
-            UpdateCharacterImage(data.character1Action, data.character1ImageFileName,
-                characterImage1, data.coordinateX1);
-        }
-        if (NotNullNorEmpty(data.character2Action))
-        {
-            if (data.character2Action == Constants.DISAPPEAR)
-            {
-                GameManager.Instance.isCharacter2Display = false;
-            }
-            else
-            {
-                GameManager.Instance.isCharacter2Display = true;
-                GameManager.Instance.currentCharacter2Img = data.character2ImageFileName;
-                GameManager.Instance.currentCharacter2Position = data.coordinateX2;
-            }
-            UpdateCharacterImage(data.character2Action, data.character2ImageFileName,
-                characterImage2, data.coordinateX2);
         }
         currentLine++;
     }
@@ -285,15 +279,15 @@ public class VNManager : MonoBehaviour
         {
             PlayBackgroundMusic(GameManager.Instance.currentBackgroundMusic);
         }
-        if (GameManager.Instance.isCharacter1Display)
+
+        CharacterManager.Instance.ClearAll();
+        foreach (var c in GameManager.Instance.currentCharacterData)
         {
-            UpdateCharacterImage(Constants.APPEAR_AT_INSTANTLY, GameManager.Instance.currentCharacter1Img,
-                                characterImage1, GameManager.Instance.currentCharacter1Position);
-        }
-        if (GameManager.Instance.isCharacter2Display)
-        {
-            UpdateCharacterImage(Constants.APPEAR_AT_INSTANTLY, GameManager.Instance.currentCharacter2Img,
-                                characterImage2, GameManager.Instance.currentCharacter2Position);
+            CharacterManager.Instance.ShowCharacter(
+                c.characterID,
+                new Vector2(c.positionX, 0f),
+                c.expressionName
+                );
         }
     }
     bool NotNullNorEmpty(string str)
@@ -524,12 +518,7 @@ public class VNManager : MonoBehaviour
             savedPlayerName = gm.playerName,
             savedBackgroundImg = gm.currentBackgroundImg,
             savedBackgroundMusic = gm.currentBackgroundMusic,
-            savedCharacter1Img = gm.currentCharacter1Img,
-            savedCharacter2Img = gm.currentCharacter2Img,
-            savedCharacter1Position = gm.currentCharacter1Position,
-            savedCharacter2Position = gm.currentCharacter2Position,
-            savedIsCharacter1Display = gm.isCharacter1Display,
-            savedIsCharacter2Display = gm.isCharacter2Display
+            savedCharacters = gm.currentCharacterData
         };
     }
     #endregion

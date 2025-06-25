@@ -13,12 +13,7 @@ public class GameManager : MonoBehaviour
     public string currentLanguage = Constants.DEFAULT_LANGUAGE;
     public string currentBackgroundImg;
     public string currentBackgroundMusic;
-    public bool isCharacter1Display;
-    public bool isCharacter2Display;
-    public string currentCharacter1Img;
-    public string currentCharacter2Img;
-    public string currentCharacter1Position;
-    public string currentCharacter2Position;
+    public List<CharacterSaveData> currentCharacterData = new List<CharacterSaveData>();
 
     public bool hasStarted;
     public HashSet<string> unlockedBackgrounds = new HashSet<string>();
@@ -41,6 +36,12 @@ public class GameManager : MonoBehaviour
     {
         return Path.Combine(Application.persistentDataPath, Constants.SAVE_FILE_PATH, index + Constants.SAVE_FILE_EXTENSION);
     }
+    public class CharacterSaveData
+    {
+        public string characterID;
+        public float positionX;
+        public string expressionName;
+    }
     public class SaveData
     {
         public string savedStoryFileName;
@@ -49,12 +50,7 @@ public class GameManager : MonoBehaviour
         public LinkedList<ExcelReader.ExcelData> savedHistoryRecords;
         public string savedBackgroundImg;
         public string savedBackgroundMusic;
-        public string savedCharacter1Img;
-        public string savedCharacter2Img;
-        public string savedCharacter1Position;
-        public string savedCharacter2Position;
-        public bool savedIsCharacter1Display;
-        public bool savedIsCharacter2Display;
+        public List<CharacterSaveData> savedCharacters;
         public string savedPlayerName;
     }
     public static GameManager Instance { get; private set; }

@@ -2,9 +2,19 @@ using System.Collections.Generic;
 using System.IO;
 using ExcelDataReader;
 using System.Text;
+using System;
+using UnityEngine;
+using UnityEngine.UIElements;
 public class ExcelReader
 {
-    public struct ExcelData
+    public class CharacterCommand
+    {
+        public string characterID;
+        public string action;
+        public float positionX;
+        public string expressionName;
+    }
+    public class ExcelData
     {
         public string speakerName;
         public string speakingContent;
@@ -12,12 +22,7 @@ public class ExcelReader
         public string vocalAudioFileName;
         public string backgroundImageFileName;
         public string backgroundMusicFileName;
-        public string character1Action;
-        public string coordinateX1;
-        public string character1ImageFileName;
-        public string character2Action;
-        public string coordinateX2;
-        public string character2ImageFileName;
+        public List<CharacterCommand> characterCommands = new();
         public string englishName;
         public string englishContent;
         public string japaneseName;
@@ -27,36 +32,87 @@ public class ExcelReader
     {
         List<ExcelData> excelData = new List<ExcelData>();
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+
+
+        using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
+        using var reader = ExcelReaderFactory.CreateReader(stream);
+        do
         {
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            while (reader.Read())
             {
-                do
+                if (reader.IsDBNull(0) && reader.IsDBNull(1))
+                    continue;
+
+                var data = new ExcelData
                 {
-                    while (reader.Read())
+                    speakerName = GetCellString(reader, 0),
+                    speakingContent = GetCellString(reader, 1),
+                    avatarImageFileName = GetCellString(reader, 2),
+                    vocalAudioFileName = GetCellString(reader, 3),
+                    backgroundImageFileName = GetCellString(reader, 4),
+                    backgroundMusicFileName = GetCellString(reader, 5),
+                    characterCommands = new List<CharacterCommand>(),
+                    englishName = GetCellString(reader, 7),
+                    englishContent = GetCellString(reader, 8),
+                    japaneseName = GetCellString(reader, 9),
+                    japaneseContent = GetCellString(reader, 10)
+                };
+
+                var raw = GetCellString(reader, 6);
+                if (!string.IsNullOrEmpty(raw))
+                {
+                    var parts = raw.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var p in parts)
                     {
-                        ExcelData data = new ExcelData();
-                        data.speakerName = GetCellString(reader, 0);
-                        data.speakingContent = GetCellString(reader, 1);
-                        data.avatarImageFileName = GetCellString(reader, 2);
-                        data.vocalAudioFileName = GetCellString(reader, 3);
-                        data.backgroundImageFileName = GetCellString(reader, 4);
-                        data.backgroundMusicFileName = GetCellString(reader, 5);
-                        data.character1Action = GetCellString(reader, 6);
-                        data.coordinateX1 = GetCellString(reader, 7);
-                        data.character1ImageFileName = GetCellString(reader, 8);
-                        data.character2Action = GetCellString(reader, 9);
-                        data.coordinateX2 = GetCellString(reader, 10);
-                        data.character2ImageFileName = GetCellString(reader, 11);
-                        data.englishName = GetCellString(reader, 12);
-                        data.englishContent = GetCellString(reader, 13);
-                        data.japaneseName = GetCellString(reader, 14);
-                        data.japaneseContent = GetCellString(reader, 15);
-                        excelData.Add(data);
+                        var block = p.Trim();
+                        if (string.IsNullOrEmpty(block))
+                        {
+                            continue;
+                        }
+
+                        var fields = block.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        if (fields.Length < 2)
+                        {
+                            continue;
+                        }
+
+                        var cmd = new CharacterCommand
+                        {
+                            characterID = fields[0].Trim(),
+                            action = fields[1].Trim(),
+                        };
+                        if (cmd.action != Constants.DISAPPEAR)
+                        {
+                            if (fields.Length < 4)
+                            {
+                                continue;
+                            }
+
+                            var third = fields[2].Trim();
+                            var fourth = fields[3].Trim();
+
+                            if (float.TryParse(third, out var px))
+                            {
+                                cmd.positionX = px;
+                                cmd.expressionName = string.IsNullOrWhiteSpace(fourth) ? null : fourth;
+                            }
+                            else if (float.TryParse(fourth, out px))
+                            {
+                                cmd.positionX = px;
+                                cmd.expressionName = string.IsNullOrWhiteSpace(third) ? null : third;
+                            }
+                            else
+                            {
+                                cmd.expressionName = null;
+                                cmd.positionX = 0f;
+                            }
+                        }
+                        data.characterCommands.Add(cmd);
                     }
-                } while (reader.NextResult());
+                }
+                excelData.Add(data);
             }
-        }
+        } while (reader.NextResult());
         return excelData;
     }
     private static string GetCellString(IExcelDataReader reader, int index)

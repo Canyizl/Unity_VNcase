@@ -487,7 +487,6 @@ MonoBehaviour:
   currentCharacter1Position: 
   currentCharacter2Position: 
   hasStarted: 0
-  currentSaveLoadMode: 0
 --- !u!4 &162409309
 Transform:
   m_ObjectHideFlags: 0
