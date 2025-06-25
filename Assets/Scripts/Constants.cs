@@ -66,12 +66,14 @@ public class Constants : MonoBehaviour
     public static string COORDINATE_MISSING = "Coordinate missing";
 
     public static int DEFAULT_START_INDEX = 0;
+    public static int QUICK_SAVE_SLOT = 0;
     public static int SLOTS_PER_PAGE = 8;
     public static int TOTAL_SLOTS = 40;
     public static string COLON = ": ";
     public static string SAVE_GAME = "save_game";
     public static string LOAD_GAME = "load_game";
     public static string EMPTY_SLOT = "empty_slot";
+    
 
     public static string CAMERA_NOT_FOUND = "Main camera not found!";
     public static string SAVE_FILE_PATH = "saves";

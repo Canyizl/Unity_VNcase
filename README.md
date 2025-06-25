@@ -14,7 +14,7 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 · InputScene：在开始游戏前，可让玩家自主输入主人公名称。
 
-· GameScene：人物Img与avatar显示，剧本读取与显示，自适应多选项跳转，人物语音和场景bgm控制，自动播放，快速跳过，进入保存与加载场景，进入历史记录场景，返回菜单场景，退出游戏，选项加载。
+· GameScene：人物Img与avatar显示，剧本读取与显示，自适应多选项跳转，人物语音和场景bgm控制，自动播放，快速跳过，进入保存与加载场景，快速保存与快速加载，进入历史记录场景，返回菜单场景，退出游戏，选项加载。
 
 · HistoryScene：历史记录实现。
 
@@ -32,7 +32,7 @@ This repo aims to develop a basic system framework for a Visual Novel Game, incl
 
 · GameScene：支持大屏独白模式输出剧本。
 
-· SaveLoadScene：加入覆盖存档提醒，删除存档等功能。
+· SaveLoadScene：加入覆盖存档提醒，删除存档等功能。快速保存档位（0号位）进行分离提醒。
 
 · SettingScene：界面UI美化。
 

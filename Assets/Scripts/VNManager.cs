@@ -25,6 +25,8 @@ public class VNManager : MonoBehaviour
     public Button skipButton;
     public Button saveButton;
     public Button loadButton;
+    public Button quickSaveButton;
+    public Button quickLoadButton;
     public Button historyButton;
     public Button settingButton;
     public Button homeButton;
@@ -124,6 +126,8 @@ public class VNManager : MonoBehaviour
         skipButton.onClick.AddListener(OnSkipButtonClick);
         saveButton.onClick.AddListener(OnSaveButtonClick);
         loadButton.onClick.AddListener(OnLoadButtonClick);
+        quickSaveButton.onClick.AddListener(OnQuickSaveButtonClick);
+        quickLoadButton.onClick.AddListener(OnQuickLoadButtonClick);
         historyButton.onClick.AddListener(OnHistoryButtonClick);
         settingButton.onClick.AddListener(OnSettingButtonClick);
         homeButton.onClick.AddListener(OnHomeButtonClick);
@@ -534,6 +538,24 @@ public class VNManager : MonoBehaviour
     {
         GameManager.Instance.currentSaveLoadMode = GameManager.SaveLoadMode.Load;
         SceneManager.LoadScene(Constants.SAVE_LOAD_SCENE);
+    }
+    #endregion
+    #region Quick SaveLoad
+    void OnQuickSaveButtonClick()
+    {
+        SaveData();
+        GameManager.Instance.Save(Constants.QUICK_SAVE_SLOT);
+    }
+
+    void OnQuickLoadButtonClick()
+    {
+        var gm = GameManager.Instance;
+        string dataPath = gm.GenerateDataPath(Constants.QUICK_SAVE_SLOT);
+        if (File.Exists(dataPath))
+        {
+            gm.Load(Constants.QUICK_SAVE_SLOT);
+            SceneManager.LoadScene(Constants.GAME_SCENE);
+        }
     }
     #endregion
     #region History
